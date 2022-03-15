@@ -1,7 +1,8 @@
 package org.example;
 
-public class Produkt {
-    public boolean aktiv(Vermittler vermittler) {
+public interface Produkt {
+
+    default boolean aktiv(Vermittler vermittler) {
         return false;
     }
 }

@@ -14,14 +14,14 @@ public class Berechnung {
                 var summe = BigDecimal.ZERO;
                 for(var k : konfigurationenFür(g)) {
                     var geld = k.berechneGeld(g);
-                    summe.add(geld);
+                    summe = summe.add(geld);
                     fürFreigabeVorsehen(g, geld);
                     if(geld.compareTo(BigDecimal.ZERO) != 0) {
                         amPdfAnhängen(g, geld);
                     }
                     g.markiereBerechnet(true);
                 }
-                infoAnFreigebende();
+                infoAnFreigebende(summe);
             }
         }
     }
@@ -42,7 +42,7 @@ public class Berechnung {
         return Collections.emptyList();
     }
 
-    public void infoAnFreigebende() {
+    public void infoAnFreigebende(BigDecimal summe) {
 		//...
     }
 

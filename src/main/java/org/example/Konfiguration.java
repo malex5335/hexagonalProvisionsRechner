@@ -2,8 +2,8 @@ package org.example;
 
 import java.math.BigDecimal;
 
-public class Konfiguration {
-    public BigDecimal berechneGeld(Geschäft g) {
+public interface Konfiguration {
+    default BigDecimal berechneGeld(Geschäft geschäft) {
         return BigDecimal.ZERO;
     }
 }

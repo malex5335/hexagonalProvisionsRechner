@@ -2,28 +2,27 @@ package org.example;
 
 import java.time.LocalDateTime;
 
-public class Geschäft {
+public interface Geschäft {
 
-    public LocalDateTime anlieferDatum() {
+    default LocalDateTime anlieferDatum() {
         return LocalDateTime.now();
     }
 
-    public Produkt produkt() {
-        return new Produkt();
+    default Produkt produkt() {
+        return null;
     }
 
-    public Vermittler vermittler() {
-        return new Vermittler();
+    default Vermittler vermittler() {
+        return null;
     }
 
-    public enum Status {
+    enum Status {
         SALE, LEAD
     }
 
-    public void markiereBerechnet(boolean b) {
-    }
+    void markiereBerechnet(boolean berechnetStatus);
 
-    public Status status() {
+    default Status status() {
         return Status.LEAD;
     }
 }
