@@ -1,15 +1,10 @@
 package org.example;
 
-import java.util.Collections;
 import java.util.List;
 
 public interface BerechnungInputPort {
 
-    default List<Geschäft> unberechneteGeschäfte() {
-        return Collections.emptyList();
-    }
+    List<Geschäft> unberechneteGeschäfte();
 
-    default List<Konfiguration> konfigurationenFür(Geschäft geschäft) {
-        return Collections.emptyList();
-    }
+    List<Konfiguration> konfigurationenFür(Geschäft geschäft);
 }
