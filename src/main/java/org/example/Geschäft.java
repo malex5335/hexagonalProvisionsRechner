@@ -20,8 +20,6 @@ public interface Geschäft {
         SALE, LEAD
     }
 
-    void markiereBerechnet(boolean berechnetStatus);
-
     default Status status() {
         return Status.LEAD;
     }
