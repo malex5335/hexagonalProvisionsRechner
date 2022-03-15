@@ -15,14 +15,16 @@ public class BerechnungTest {
     @Test
     public void berechnung_erfolgreich() {
         // given
-        var testInput = new TestBerechnungInputPort();
-        var testOutput = new TestBerechnungOutputPort();
-        var berechnung = new Berechnung(testInput, testOutput);
+        var inputAdapter = new BerechnungInputTestAdapter();
+        var outputAdapter = new BerechnungOutputTestAdapter();
+        var berechnung = new Berechnung(inputAdapter, outputAdapter);
 
         // when
         berechnung.berechneGeschäfte();
 
         // then
-
+        // output adapter sollte zurückgeben, dass das Geschäft berechnet wurde
+        // der berechnete Betrag sollte ebenfalls stimmen
+        // ggf. weitere Tests
     }
 }

@@ -3,7 +3,7 @@ import org.example.Geschäft;
 
 import java.math.BigDecimal;
 
-public class TestBerechnungOutputPort implements BerechnungOutputPort {
+public class BerechnungOutputTestAdapter implements BerechnungOutputPort {
 
     @Override
     public void infoAnFreigebende(BigDecimal summe) {

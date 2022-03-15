@@ -4,7 +4,7 @@ import org.example.Konfiguration;
 
 import java.util.List;
 
-public class TestBerechnungInputPort implements BerechnungInputPort {
+public class BerechnungInputTestAdapter implements BerechnungInputPort {
 
     @Override
     public List<Geschäft> unberechneteGeschäfte() {
