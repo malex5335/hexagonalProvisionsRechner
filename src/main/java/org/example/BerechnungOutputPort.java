@@ -3,11 +3,11 @@ package org.example;
 import java.math.BigDecimal;
 
 public interface BerechnungOutputPort {
-    void infoAnFreigebende(BigDecimal summe);
+    void infoAnFreigebende(final BigDecimal summe);
 
-    void fürFreigabeVorsehen(Geschäft geschäft, BigDecimal geld);
+    void fürFreigabeVorsehen(final Geschäft geschäft, final BigDecimal geld);
 
-    void amPdfAnhängen(Geschäft geschäft, BigDecimal geld);
+    void amPdfAnhängen(final Geschäft geschäft, final BigDecimal geld);
 
-    void markiereBerechnet(Geschäft geschäft);
+    void markiereBerechnet(final Geschäft geschäft);
 }

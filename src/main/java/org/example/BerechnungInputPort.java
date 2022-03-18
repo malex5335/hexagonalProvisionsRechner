@@ -6,5 +6,5 @@ public interface BerechnungInputPort {
 
     List<Geschäft> unberechneteGeschäfte();
 
-    List<Konfiguration> konfigurationenFür(Geschäft geschäft);
+    List<Konfiguration> konfigurationenFür(final Geschäft geschäft);
 }

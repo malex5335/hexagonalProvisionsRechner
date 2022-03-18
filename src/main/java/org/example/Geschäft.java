@@ -4,23 +4,15 @@ import java.time.LocalDateTime;
 
 public interface Geschäft {
 
-    default LocalDateTime anlieferDatum() {
-        return LocalDateTime.now();
-    }
+    LocalDateTime anlieferDatum();
 
-    default Produkt produkt() {
-        return null;
-    }
+    Produkt produkt();
 
-    default Vermittler vermittler() {
-        return null;
-    }
+    Vermittler vermittler();
 
     enum Status {
         SALE, LEAD
     }
 
-    default Status status() {
-        return Status.LEAD;
-    }
+    Status status();
 }

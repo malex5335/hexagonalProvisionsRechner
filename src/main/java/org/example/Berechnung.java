@@ -16,7 +16,7 @@ public class Berechnung {
 
     public void berechneGeschäfte() {
         for(var g : berechnungInputPort.unberechneteGeschäfte()) {
-            if(berechnenOk(g)) {
+            if(sollBerechnetWerden(g)) {
                 var summe = BigDecimal.ZERO;
                 for(var k : berechnungInputPort.konfigurationenFür(g)) {
                     var geld = k.berechneGeld(g);
@@ -32,7 +32,7 @@ public class Berechnung {
         }
     }
 
-    private boolean berechnenOk(Geschäft geschäft){
+    private boolean sollBerechnetWerden(Geschäft geschäft){
         return geschäft.status().equals(Geschäft.Status.SALE) &&
                 inDerVergangenheit(Duration.ofDays(120), geschäft.anlieferDatum()) &&
                 geschäft.produkt().aktiv(geschäft.vermittler());
