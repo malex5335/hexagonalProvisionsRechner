@@ -3,7 +3,6 @@ package org.example;
 import java.time.LocalDateTime;
 
 public interface Geschaeft {
-
     LocalDateTime anlieferDatum();
 
     boolean fuerVermittler(Vermittler vermittler);

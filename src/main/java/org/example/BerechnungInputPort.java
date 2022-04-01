@@ -3,7 +3,6 @@ package org.example;
 import java.util.List;
 
 public interface BerechnungInputPort {
-
     List<Konfiguration> konfigurationenFuer(final Produkt produkt);
 
     List<Konfiguration> konfigurationenFuer(final Vermittler vermittler);

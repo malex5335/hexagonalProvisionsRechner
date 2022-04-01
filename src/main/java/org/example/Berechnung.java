@@ -5,7 +5,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class Berechnung {
-
     public BerechnungInputPort berechnungInputPort;
     public BerechnungOutputPort berechnungOutputPort;
 
