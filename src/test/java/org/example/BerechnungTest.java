@@ -4,24 +4,27 @@ import org.junit.jupiter.api.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.example.TestGeschaeft.*;
 
 public class BerechnungTest {
-    private Vermittler vermittler;
-    private Produkt produkt;
-    private final List<Geschaeft> geschaefte = new ArrayList<>();
-    private TestKonfiguration konfiguration;
-    private BerechnungOutputTestAdapter outputAdapter;
-    private Berechnung berechnung;
 
     @BeforeEach
     void setUp() {
-        vermittler = new TestVermittler();
-        produkt = new TestProdukt();
-        konfiguration = new TestKonfiguration()
+    }
+
+    @AfterEach
+    void tearDown() {
+    }
+
+    @Test
+    public void berechnung_produktSpezifisch_1Geschaeft_erfolgreich() {
+        // given
+        var geschaefte = new ArrayList<Geschaeft>();
+        var vermittler = new TestVermittler();
+        var produkt = new TestProdukt();
+        var konfiguration = new TestKonfiguration()
                 .mitProdukt(produkt)
                 .mitVermittler(vermittler);
         var inputAdapter = new BerechnungInputTestAdapter()
@@ -29,18 +32,8 @@ public class BerechnungTest {
                 .mitProukt(produkt)
                 .mitKonfiguration(konfiguration)
                 .mitGeschaeften(geschaefte);
-        outputAdapter = new BerechnungOutputTestAdapter();
-        berechnung = new Berechnung(inputAdapter, outputAdapter);
-    }
-
-    @AfterEach
-    void tearDown() {
-        geschaefte.clear();
-    }
-
-    @Test
-    public void berechnung_produktSpezifisch_1Geschaeft_erfolgreich() {
-        // given
+        var outputAdapter = new BerechnungOutputTestAdapter();
+        var berechnung = new Berechnung(inputAdapter, outputAdapter);
         var geld = new BigDecimal(10);
         var geschaeft = defaultGeschaeft()
                 .mitProdukt(produkt)
@@ -60,6 +53,19 @@ public class BerechnungTest {
     @Test
     public void berechnung_produktSpezifisch_2Geschaefte_erfolgreich() {
         // given
+        var geschaefte = new ArrayList<Geschaeft>();
+        var vermittler = new TestVermittler();
+        var produkt = new TestProdukt();
+        var konfiguration = new TestKonfiguration()
+                .mitProdukt(produkt)
+                .mitVermittler(vermittler);
+        var inputAdapter = new BerechnungInputTestAdapter()
+                .mitVermittler(vermittler)
+                .mitProukt(produkt)
+                .mitKonfiguration(konfiguration)
+                .mitGeschaeften(geschaefte);
+        var outputAdapter = new BerechnungOutputTestAdapter();
+        var berechnung = new Berechnung(inputAdapter, outputAdapter);
         var geld = new BigDecimal(10);
         var geschaeft = defaultGeschaeft()
                 .mitProdukt(produkt)
