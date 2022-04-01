@@ -4,7 +4,15 @@ import java.util.List;
 
 public interface BerechnungInputPort {
 
-    List<Geschäft> unberechneteGeschäfte();
+    List<Konfiguration> konfigurationenFuer(final Produkt produkt);
 
-    List<Konfiguration> konfigurationenFür(final Geschäft geschäft);
+    List<Konfiguration> konfigurationenFuer(final Vermittler vermittler);
+
+    List<Produkt> alleProdukte();
+
+    List<Geschaeft> unberechneteGeschäfteFuerProdukt(Produkt produkt);
+
+    List<Vermittler> alleVermittler();
+
+    List<Geschaeft> unberechneteGeschaefteFuerVermittler(Vermittler vermittler);
 }

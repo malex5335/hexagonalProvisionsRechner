@@ -14,28 +14,45 @@ public class Berechnung {
         this.berechnungOutputPort = berechnungOutputPort;
     }
 
-    public void berechneGeschäfte() {
-        for(var g : berechnungInputPort.unberechneteGeschäfte()) {
-            if(sollBerechnetWerden(g)) {
-                var summe = BigDecimal.ZERO;
-                for(var k : berechnungInputPort.konfigurationenFür(g)) {
-                    var geld = k.berechneGeld(g);
-                    summe = summe.add(geld);
-                    berechnungOutputPort.fürFreigabeVorsehen(g, geld);
-                    if(geld.compareTo(BigDecimal.ZERO) != 0) {
-                        berechnungOutputPort.amPdfAnhängen(g, geld);
-                    }
-                    berechnungOutputPort.markiereBerechnet(g);
-                }
-                berechnungOutputPort.infoAnFreigebende(summe);
+    /**
+     * berechnet produktspezifische Konfigurationen
+     * ausgezahltes Geld wird addiert und mittels
+     * {@link BerechnungOutputPort#infoAnFreigebende(BigDecimal)} weiterverarbeitet
+     */
+    public void berechneProduktSpezifischeKonfigs() {
+        var summe = BigDecimal.ZERO;
+        for(var produkt : berechnungInputPort.alleProdukte()) {
+            for(var konfiguration : berechnungInputPort.konfigurationenFuer(produkt)) {
+                var geschaefte = berechnungInputPort.unberechneteGeschäfteFuerProdukt(produkt);
+                var geld = konfiguration.berechneGeld(geschaefte, this::sollBerechnetWerden);
+                berechnungOutputPort.markiereBerechnet(geschaefte, konfiguration);
+                summe = summe.add(geld);
             }
         }
+        berechnungOutputPort.infoAnFreigebende(summe);
     }
 
-    private boolean sollBerechnetWerden(Geschäft geschäft){
-        return geschäft.status().equals(Geschäft.Status.SALE) &&
-                inDerVergangenheit(Duration.ofDays(120), geschäft.anlieferDatum()) &&
-                geschäft.produkt().aktiv(geschäft.vermittler());
+    /**
+     * berechnet vermittlerspezifische Konfigurationen
+     * ausgezahltes Geld wird addiert und mittels
+     * {@link BerechnungOutputPort#infoAnFreigebende(BigDecimal)} weiterverarbeitet
+     */
+    public void berechneVermittlerSpezifischeKonfigs() {
+        var summe = BigDecimal.ZERO;
+        for(var vermittler : berechnungInputPort.alleVermittler()){
+            for(var konfiguration : berechnungInputPort.konfigurationenFuer(vermittler)) {
+                var geschaefte = berechnungInputPort.unberechneteGeschaefteFuerVermittler(vermittler);
+                var geld = konfiguration.berechneGeld(geschaefte, this::sollBerechnetWerden);
+                berechnungOutputPort.markiereBerechnet(geschaefte, konfiguration);
+                summe = summe.add(geld);
+            }
+        }
+        berechnungOutputPort.infoAnFreigebende(summe);
+    }
+
+    private boolean sollBerechnetWerden(Geschaeft geschaeft){
+        return geschaeft.status().equals(Geschaeft.Status.SALE) &&
+                inDerVergangenheit(Duration.ofDays(120), geschaeft.anlieferDatum());
     }
 
     private boolean inDerVergangenheit(Duration alter, LocalDateTime zeitpunkt) {
