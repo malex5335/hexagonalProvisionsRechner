@@ -51,7 +51,7 @@ public class StandardBerechnungTest {
     }
 
     @Test
-    public void produktSpezifisch_erfolgreich() throws InterruptedException {
+    public void produktSpezifisch_berechnet() throws InterruptedException {
         // given
         var geldProGeschaeft = new BigDecimal(10);
         var produkt = new TestProdukt();
@@ -71,7 +71,7 @@ public class StandardBerechnungTest {
     }
 
     @Test
-    public void produktSpezifisch_100Geschaefte_erfolgreich() throws InterruptedException {
+    public void produktSpezifisch_100Geschaefte_berechnet() throws InterruptedException {
         // given
         var geldProGeschaeft = new BigDecimal(10);
         var produkt = new TestProdukt();
@@ -137,7 +137,26 @@ public class StandardBerechnungTest {
     }
 
     @Test
-    public void vermittlerSpezifisch_erfolgreich() throws InterruptedException {
+    public void produktSpezifisch_geschaeftKeinSale_nichtBerechnet() {
+        // given
+        var geldProGeschaeft = new BigDecimal(10);
+        var produkt = new TestProdukt();
+        var konfiguration = new StandardProvision(produkt, null, geldProGeschaeft);
+        produkte.add(produkt);
+        geschaefte.addAll(erstelleGeschaefte(produkt, null, 1, Geschaeft.Status.LEAD));
+        konfigurationen.add(konfiguration);
+
+        // when
+        berechnung.berechneProduktSpezifischeKonfigs();
+
+        // then
+        assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
+        assertTrue(geschaefte.stream()
+                .noneMatch(geschaeft -> geschaeft.istBerechnetFuerKonfiguration(konfiguration)));
+    }
+
+    @Test
+    public void vermittlerSpezifisch_berechnet() throws InterruptedException {
         // given
         var geldProGeschaeft = new BigDecimal(10);
         var produkt = new TestProdukt();
@@ -159,7 +178,7 @@ public class StandardBerechnungTest {
     }
 
     @Test
-    public void vermittlerSpezifisch_100Geschaefte_erfolgreich() {
+    public void vermittlerSpezifisch_100Geschaefte_berechnet() {
         // given
         var geldProGeschaeft = new BigDecimal(10);
         var produkt = new TestProdukt();
@@ -278,13 +297,42 @@ public class StandardBerechnungTest {
                 .noneMatch(geschaeft -> geschaeft.istBerechnetFuerKonfiguration(konfiguration)));
     }
 
+    @Test
+    public void vermittlerSpezifisch_geschaeftKeinSale_nichtBerechnet() {
+        // given
+        var geldProGeschaeft = new BigDecimal(10);
+        var produkt = new TestProdukt();
+        var vermittler = new TestVermittler();
+        var konfiguration = new StandardProvision(produkt, vermittler, geldProGeschaeft);
+        produkte.add(produkt);
+        vermittler_.add(vermittler);
+        geschaefte.addAll(erstelleGeschaefte(produkt, vermittler, 1, Geschaeft.Status.LEAD));
+        konfigurationen.add(konfiguration);
+
+        // when
+        berechnung.berechneProduktSpezifischeKonfigs();
+
+        // then
+        assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
+        assertTrue(geschaefte.stream()
+                .noneMatch(geschaeft -> geschaeft.istBerechnetFuerKonfiguration(konfiguration)));
+    }
+
     private List<Geschaeft> erstelleGeschaefte(Produkt produkt, Vermittler vermittler, int count) {
+        return erstelleGeschaefte(produkt, vermittler, count, null);
+    }
+
+    private List<Geschaeft> erstelleGeschaefte(Produkt produkt, Vermittler vermittler, int count, Geschaeft.Status status) {
         var geschaefte = new ArrayList<Geschaeft>();
         while(--count >= 0) {
-            geschaefte.add(
-                    defaultGeschaeft()
+            var geschaeft = defaultGeschaeft()
                     .mitProdukt(produkt)
-                    .mitVermittler(vermittler)
+                    .mitVermittler(vermittler);
+            if(status != null) {
+                geschaeft.mitStatus(status);
+            }
+            geschaefte.add(
+                    geschaeft
             );
         }
         return geschaefte;

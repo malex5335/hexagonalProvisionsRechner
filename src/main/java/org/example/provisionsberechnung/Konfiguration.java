@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public interface Konfiguration {
-    BigDecimal berechneGeld(List<Geschaeft> geschaefte, Predicate<Geschaeft> sollBerechnetWerden);
+    BigDecimal berechneGeld(Geschaeft geschaeft);
 
     boolean fuerProdukt(Produkt produkt);
 

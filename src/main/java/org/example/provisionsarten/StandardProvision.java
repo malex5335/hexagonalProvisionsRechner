@@ -22,14 +22,8 @@ public class StandardProvision implements Konfiguration {
     }
 
     @Override
-    public BigDecimal berechneGeld(List<Geschaeft> geschaefte, Predicate<Geschaeft> sollBerechnetWerden) {
-        var summe = BigDecimal.ZERO;
-        for(var geschaeft : geschaefte) {
-            if(sollBerechnetWerden.test(geschaeft)) {
-                summe = summe.add(geldProGeschaeft);
-            }
-        }
-        return summe;
+    public BigDecimal berechneGeld(Geschaeft geschaeft) {
+        return geldProGeschaeft;
     }
 
     @Override

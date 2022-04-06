@@ -3,6 +3,7 @@ package org.example.provisionsberechnung;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class Berechnung {
     public BerechnungInputPort berechnungInputPort;
@@ -21,11 +22,9 @@ public class Berechnung {
     public void berechneProduktSpezifischeKonfigs() {
         var summe = BigDecimal.ZERO;
         for(var produkt : berechnungInputPort.alleProdukte()) {
-            for(var konfiguration : berechnungInputPort.konfigurationenFuer(produkt)) {
-                var geschaefte = berechnungInputPort.unberechneteGeschaefteFuerProdukt(produkt);
-                var geld = konfiguration.berechneGeld(geschaefte, this::sollBerechnetWerden);
-                berechnungOutputPort.markiereBerechnet(geschaefte, konfiguration);
-                summe = summe.add(geld);
+            for(var konfiguration : berechnungInputPort.alleKonfigurationen(produkt)) {
+                var geschaefte = berechnungInputPort.unberechneteGeschaefte(produkt);
+                summe = summe.add(berechneGeschaefte(geschaefte, konfiguration));
             }
         }
         berechnungOutputPort.infoAnFreigebende(summe);
@@ -40,11 +39,9 @@ public class Berechnung {
         var summe = BigDecimal.ZERO;
         for(var vermittler : berechnungInputPort.alleVermittler()) {
             for(var produkt : berechnungInputPort.alleProdukte()) {
-                for(var konfiguration : berechnungInputPort.konfigurationenFuer(produkt, vermittler)) {
-                    var geschaefte = berechnungInputPort.unberechneteGeschaefteFuerVermittler(vermittler, produkt);
-                    var geld = konfiguration.berechneGeld(geschaefte, this::sollBerechnetWerden);
-                    berechnungOutputPort.markiereBerechnet(geschaefte, konfiguration);
-                    summe = summe.add(geld);
+                for(var konfiguration : berechnungInputPort.alleKonfigurationen(produkt, vermittler)) {
+                    var geschaefte = berechnungInputPort.unberechneteGeschaefte(vermittler, produkt);
+                    summe = summe.add(berechneGeschaefte(geschaefte, konfiguration));
                 }
             }
         }
@@ -60,5 +57,17 @@ public class Berechnung {
         var heute = LocalDateTime.now();
         var verganenheit = heute.minus(alter);
         return zeitpunkt.isBefore(verganenheit);
+    }
+
+    private BigDecimal berechneGeschaefte(List<Geschaeft> geschaefte, Konfiguration konfiguration) {
+        var summe = BigDecimal.ZERO;
+        for(var geschaeft : geschaefte) {
+            if(sollBerechnetWerden(geschaeft)) {
+                var geld = konfiguration.berechneGeld(geschaeft);
+                berechnungOutputPort.markiereBerechnet(geschaefte, konfiguration);
+                summe = summe.add(geld);
+            }
+        }
+        return summe;
     }
 }
