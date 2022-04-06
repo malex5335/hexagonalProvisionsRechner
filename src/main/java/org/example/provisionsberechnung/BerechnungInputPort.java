@@ -5,7 +5,7 @@ import java.util.List;
 public interface BerechnungInputPort {
     List<Konfiguration> konfigurationenFuer(final Produkt produkt);
 
-    List<Konfiguration> konfigurationenFuer(final Vermittler vermittler);
+    List<Konfiguration> konfigurationenFuer(final Produkt produkt, final Vermittler vermittler);
 
     List<Produkt> alleProdukte();
 
@@ -13,5 +13,5 @@ public interface BerechnungInputPort {
 
     List<Vermittler> alleVermittler();
 
-    List<Geschaeft> unberechneteGeschaefteFuerVermittler(Vermittler vermittler);
+    List<Geschaeft> unberechneteGeschaefteFuerVermittler(final Vermittler vermittler, final Produkt produkt);
 }

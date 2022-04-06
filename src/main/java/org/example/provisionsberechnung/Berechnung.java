@@ -39,11 +39,13 @@ public class Berechnung {
     public void berechneVermittlerSpezifischeKonfigs() {
         var summe = BigDecimal.ZERO;
         for(var vermittler : berechnungInputPort.alleVermittler()) {
-            for(var konfiguration : berechnungInputPort.konfigurationenFuer(vermittler)) {
-                var geschaefte = berechnungInputPort.unberechneteGeschaefteFuerVermittler(vermittler);
-                var geld = konfiguration.berechneGeld(geschaefte, this::sollBerechnetWerden);
-                berechnungOutputPort.markiereBerechnet(geschaefte, konfiguration);
-                summe = summe.add(geld);
+            for(var produkt : berechnungInputPort.alleProdukte()) {
+                for(var konfiguration : berechnungInputPort.konfigurationenFuer(produkt, vermittler)) {
+                    var geschaefte = berechnungInputPort.unberechneteGeschaefteFuerVermittler(vermittler, produkt);
+                    var geld = konfiguration.berechneGeld(geschaefte, this::sollBerechnetWerden);
+                    berechnungOutputPort.markiereBerechnet(geschaefte, konfiguration);
+                    summe = summe.add(geld);
+                }
             }
         }
         berechnungOutputPort.infoAnFreigebende(summe);

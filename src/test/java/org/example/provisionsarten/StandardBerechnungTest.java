@@ -71,7 +71,7 @@ public class StandardBerechnungTest {
     }
 
     @Test
-    public void produktSpezifisch_100Geschaefte_erfolgreich() {
+    public void produktSpezifisch_100Geschaefte_erfolgreich() throws InterruptedException {
         // given
         var geldProGeschaeft = new BigDecimal(10);
         var produkt = new TestProdukt();
@@ -81,6 +81,7 @@ public class StandardBerechnungTest {
         konfigurationen.add(konfiguration);
 
         // when
+        TimeUnit.MILLISECONDS.sleep(1); // TODO: why do I need to wait 1ms so that java can update all references? || and why only in this method?
         berechnung.berechneProduktSpezifischeKonfigs();
 
         // then

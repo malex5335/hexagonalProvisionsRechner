@@ -40,9 +40,10 @@ public class BerechnungInputTestAdapter implements BerechnungInputPort {
     }
 
     @Override
-    public List<Konfiguration> konfigurationenFuer(Vermittler vermittler) {
+    public List<Konfiguration> konfigurationenFuer(Produkt produkt, Vermittler vermittler) {
         return konfigurationen.stream()
                 .filter(k -> k.fuerVermittler(vermittler))
+                .filter(k -> k.fuerProdukt(produkt))
                 .collect(Collectors.toList());
     }
 
@@ -66,13 +67,12 @@ public class BerechnungInputTestAdapter implements BerechnungInputPort {
     }
 
     @Override
-    public List<Geschaeft> unberechneteGeschaefteFuerVermittler(Vermittler vermittler) {
-        var alleGeschaefte = geschaefte.stream()
+    public List<Geschaeft> unberechneteGeschaefteFuerVermittler(Vermittler vermittler, Produkt produkt) {
+        return geschaefte.stream()
                 .filter(g -> g.fuerVermittler(vermittler))
+                .filter(g -> g.fuerProdukt(produkt))
                 .filter(g -> konfigurationen.stream()
                         .noneMatch(g::istBerechnetFuerKonfiguration))
                 .collect(Collectors.toList());
-
-        return alleGeschaefte;
     }
 }
