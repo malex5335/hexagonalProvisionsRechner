@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.provisionsberechnung.Vermittler;
+
 import java.util.UUID;
 
 public class TestVermittler implements Vermittler {

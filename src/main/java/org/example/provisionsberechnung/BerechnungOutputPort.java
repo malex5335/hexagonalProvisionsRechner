@@ -1,4 +1,4 @@
-package org.example;
+package org.example.provisionsberechnung;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -6,5 +6,5 @@ import java.util.List;
 public interface BerechnungOutputPort {
     void infoAnFreigebende(final BigDecimal summe);
 
-    void markiereBerechnet(List<Geschaeft> geschäfte, Konfiguration konfiguration);
+    void markiereBerechnet(List<Geschaeft> geschaefte, Konfiguration konfiguration);
 }

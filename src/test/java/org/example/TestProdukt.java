@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.provisionsberechnung.Produkt;
+
 import java.util.UUID;
 
 public class TestProdukt implements Produkt {

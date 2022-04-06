@@ -1,4 +1,4 @@
-package org.example;
+package org.example.provisionsberechnung;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ public interface BerechnungInputPort {
 
     List<Produkt> alleProdukte();
 
-    List<Geschaeft> unberechneteGeschäfteFuerProdukt(Produkt produkt);
+    List<Geschaeft> unberechneteGeschaefteFuerProdukt(Produkt produkt);
 
     List<Vermittler> alleVermittler();
 

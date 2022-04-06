@@ -1,4 +1,4 @@
-package org.example;
+package org.example.provisionsberechnung;
 
 import java.time.LocalDateTime;
 

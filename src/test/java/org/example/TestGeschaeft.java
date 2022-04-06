@@ -1,5 +1,10 @@
 package org.example;
 
+import org.example.provisionsberechnung.Geschaeft;
+import org.example.provisionsberechnung.Konfiguration;
+import org.example.provisionsberechnung.Produkt;
+import org.example.provisionsberechnung.Vermittler;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
