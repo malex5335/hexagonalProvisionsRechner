@@ -229,6 +229,55 @@ public class StandardBerechnungTest {
                 .noneMatch(geschaeft -> geschaeft.istBerechnetFuerKonfiguration(konfiguration)));
     }
 
+    @Test
+    public void vermittlerSpezifisch_konfigurationMitAnderemVermittler_nichtBerechnet() {
+        // given
+        var geldProGeschaeft = new BigDecimal(10);
+        var produkt = new TestProdukt();
+        var vermittler = new TestVermittler()
+                .mitVermittlerNummer("eine Vermittlernummer");
+        var andererVermittler = new TestVermittler()
+                .mitVermittlerNummer("eine andere Vermittlernummer");
+        var konfiguration = new StandardProvision(produkt, andererVermittler, geldProGeschaeft);
+        produkte.add(produkt);
+        produkte.add(produkt);
+        vermittler_.add(vermittler);
+        geschaefte.addAll(erstelleGeschaefte(produkt, vermittler, 1));
+        konfigurationen.add(konfiguration);
+
+        // when
+        berechnung.berechneVermittlerSpezifischeKonfigs();
+
+        // then
+        assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
+        assertTrue(geschaefte.stream()
+                .noneMatch(geschaeft -> geschaeft.istBerechnetFuerKonfiguration(konfiguration)));
+    }
+
+    @Test
+    public void vermittlerSpezifisch_geschaeftMitAnderemVermittler_nichtBerechnet() {
+        // given
+        var geldProGeschaeft = new BigDecimal(10);
+        var produkt = new TestProdukt();
+        var vermittler = new TestVermittler()
+                .mitVermittlerNummer("eine Vermittlernummer");
+        var andererVermittler = new TestVermittler()
+                .mitVermittlerNummer("eine andere Vermittlernummer");
+        var konfiguration = new StandardProvision(produkt, vermittler, geldProGeschaeft);
+        geschaefte.addAll(erstelleGeschaefte(produkt, andererVermittler, 1));
+        produkte.add(produkt);
+        vermittler_.add(vermittler);
+        konfigurationen.add(konfiguration);
+
+        // when
+        berechnung.berechneVermittlerSpezifischeKonfigs();
+
+        // then
+        assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
+        assertTrue(geschaefte.stream()
+                .noneMatch(geschaeft -> geschaeft.istBerechnetFuerKonfiguration(konfiguration)));
+    }
+
     private List<Geschaeft> erstelleGeschaefte(Produkt produkt, Vermittler vermittler, int count) {
         var geschaefte = new ArrayList<Geschaeft>();
         while(--count >= 0) {
