@@ -28,8 +28,9 @@ public class BerechnungTest {
     public static BerechnungOutputTestAdapter outputAdapter;
     public static BerechnungInputTestAdapter inputAdapter;
     public static Berechnung berechnung;
-    public static TestProdukt produkt;
     public static TestVermittler vermittler;
+    public static TestProdukt produkt;
+    public static BigDecimal geldProGeschaeft;
     public static TestKonfiguration konfiguration;
 
     @BeforeEach
@@ -41,12 +42,14 @@ public class BerechnungTest {
                 .mitKonfigurationen(konfigurationen)
                 .mitGeschaeften(geschaefte);
         berechnung = new Berechnung(inputAdapter, outputAdapter);
+        vermittler = defaultVermittler();
+        vermittler_.add(vermittler);
         produkt = defaultProdukt();
         produkte.add(produkt);
-        vermittler = defaultVermittler();
+        geldProGeschaeft = new BigDecimal(10);
         konfiguration = defaultKonfiguration()
                 .mitProdukt(produkt)
-                .mitGeldProGeschaeft(new BigDecimal(10));
+                .mitGeldProGeschaeft(geldProGeschaeft);
         konfigurationen.add(konfiguration);
     }
 

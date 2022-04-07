@@ -6,18 +6,28 @@ import org.example.provisionsberechnung.Produkt;
 import org.example.provisionsberechnung.Vermittler;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.function.Predicate;
 
 public class StandardProvision implements Konfiguration {
 
-    private final BigDecimal geldProGeschaeft;
-    private final Produkt produkt;
-    private final Vermittler vermittler;
+    private BigDecimal geldProGeschaeft;
+    private Produkt produkt;
+    private Vermittler vermittler;
 
     public StandardProvision(Produkt produkt, Vermittler vermittler, BigDecimal geldProGeschaeft) {
-        this.produkt = produkt;
+        mitProdukt(produkt);
+        mitVermitter(vermittler);
+        mitGeldProGeschaeft(geldProGeschaeft);
+    }
+
+    public void mitVermitter(Vermittler vermittler) {
         this.vermittler = vermittler;
+    }
+
+    public void mitProdukt(Produkt produkt) {
+        this.produkt = produkt;
+    }
+
+    public void mitGeldProGeschaeft(BigDecimal geldProGeschaeft) {
         this.geldProGeschaeft = geldProGeschaeft;
     }
 
