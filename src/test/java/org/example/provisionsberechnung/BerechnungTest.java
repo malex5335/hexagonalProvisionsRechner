@@ -68,7 +68,78 @@ public class BerechnungTest {
     }
 
     @Test
+    public void vermittlerSpezifisch_geschaeftBerechnet_keineWeitereBerechnung() {
+        // given
+        var geschaeft = defaultGeschaeft()
+                .mitProdukt(produkt)
+                .mitVermittler(vermittler)
+                .mitBerechnetFuer(konfiguration);
+        geschaefte.add(geschaeft);
+        konfiguration.mitVermittler(vermittler);
+
+        // when
+        berechnung.berechneVermittlerSpezifischeKonfigs();
+
+        // then
+        assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
+        assertTrue(geschaefte.stream()
+                .allMatch(g -> g.istBerechnetFuerKonfiguration(konfiguration)));
+    }
+
+    @Test
+    public void produktSpezifisch_geschaeftBerechnet_keineWeitereBerechnung() {
+        // given
+        var geschaeft = defaultGeschaeft()
+                .mitProdukt(produkt)
+                .mitBerechnetFuer(konfiguration);
+        geschaefte.add(geschaeft);
+
+        // when
+        berechnung.berechneProduktSpezifischeKonfigs();
+
+        // then
+        assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
+        assertTrue(geschaefte.stream()
+                .allMatch(g -> g.istBerechnetFuerKonfiguration(konfiguration)));
+    }
+
+    @Test
+    public void vermittlerSpezifisch_erfolgreichBerechnet() {
+        // given
+        var geschaeft = defaultGeschaeft()
+                .mitProdukt(produkt)
+                .mitVermittler(vermittler);
+        geschaefte.add(geschaeft);
+        konfiguration.mitVermittler(vermittler);
+
+        // when
+        berechnung.berechneVermittlerSpezifischeKonfigs();
+
+        // then
+        assertThat(outputAdapter.summe).isEqualByComparingTo(geldProGeschaeft);
+        assertTrue(geschaefte.stream()
+                .allMatch(g -> g.istBerechnetFuerKonfiguration(konfiguration)));
+    }
+
+    @Test
+    public void produktSpezifisch_erfolgreichBerechnet() {
+        // given
+        var geschaeft = defaultGeschaeft()
+                .mitProdukt(produkt);
+        geschaefte.add(geschaeft);
+
+        // when
+        berechnung.berechneProduktSpezifischeKonfigs();
+
+        // then
+        assertThat(outputAdapter.summe).isEqualByComparingTo(geldProGeschaeft);
+        assertTrue(geschaefte.stream()
+                .allMatch(g -> g.istBerechnetFuerKonfiguration(konfiguration)));
+    }
+
+    @Test
     public void vermittlerSpezifisch_produktNichtAktiv_nichtBerechnet() {
+        // given
         var geschaeft = defaultGeschaeft()
                 .mitProdukt(produkt)
                 .mitVermittler(vermittler);
@@ -87,6 +158,7 @@ public class BerechnungTest {
 
     @Test
     public void produktSpezifisch_produktNichtAktiv_nichtBerechnet() {
+        // given
         var geschaeft = defaultGeschaeft()
                 .mitProdukt(produkt);
         geschaefte.add(geschaeft);
@@ -104,6 +176,7 @@ public class BerechnungTest {
     @ParameterizedTest
     @ValueSource(ints = {0, 5, 15, 30, 60, 119})
     public void vermittlerSpezifisch_geschaeftNichtAltGenug_nichtBerechnet(int tageZurueck) {
+        // given
         var geschaeft = defaultGeschaeft()
                 .mitProdukt(produkt)
                 .mitVermittler(vermittler)
@@ -123,6 +196,7 @@ public class BerechnungTest {
     @ParameterizedTest
     @ValueSource(ints = {0, 5, 15, 30, 60, 119})
     public void produktSpezifisch_geschaeftNichtAltGenug_nichtBerechnet(int tageZurueck) {
+        // given
         var geschaeft = defaultGeschaeft()
                 .mitProdukt(produkt)
                 .mitAnlieferDatum(LocalDate.now().atStartOfDay().minusDays(tageZurueck));

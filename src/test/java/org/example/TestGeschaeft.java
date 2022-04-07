@@ -68,6 +68,11 @@ public class TestGeschaeft implements Geschaeft {
         return this;
     }
 
+    public TestGeschaeft mitBerechnetFuer(TestKonfiguration konfiguration) {
+        fuerKonfigsBerechnet.add(konfiguration);
+        return this;
+    }
+
     public void makiereBerechnet(Konfiguration konfiguration) {
         fuerKonfigsBerechnet.add(konfiguration);
     }
