@@ -15,10 +15,12 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.example.TestProdukt.defaultProdukt;
+import static org.example.TestVermittler.defaultVermittler;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.example.TestGeschaeft.defaultGeschaeft;
 
-public class StandardBerechnungTest {
+public class StandardKonfigurationTest {
 
     public static final List<Produkt> produkte = new ArrayList<>();
     public static final List<Vermittler> vermittler_ = new ArrayList<>();
@@ -54,7 +56,7 @@ public class StandardBerechnungTest {
     public void produktSpezifisch_berechnet() throws InterruptedException {
         // given
         var geldProGeschaeft = new BigDecimal(10);
-        var produkt = new TestProdukt();
+        var produkt = defaultProdukt();
         var konfiguration = new StandardProvision(produkt, null, geldProGeschaeft);
         produkte.add(produkt);
         geschaefte.addAll(erstelleGeschaefte(produkt, null, 1));
@@ -74,7 +76,7 @@ public class StandardBerechnungTest {
     public void produktSpezifisch_100Geschaefte_berechnet() throws InterruptedException {
         // given
         var geldProGeschaeft = new BigDecimal(10);
-        var produkt = new TestProdukt();
+        var produkt = defaultProdukt();
         var konfiguration = new StandardProvision(produkt, null, geldProGeschaeft);
         produkte.add(produkt);
         geschaefte.addAll(erstelleGeschaefte(produkt, null, 100));
@@ -94,9 +96,9 @@ public class StandardBerechnungTest {
     public void produktSpezifisch_konfigurationMitAnderemProdukt_nichtBerechnet() {
         // given
         var geldProGeschaeft = new BigDecimal(10);
-        var produkt = new TestProdukt()
+        var produkt = defaultProdukt()
                 .mitProduktName("ein Produkt");
-        var anderesProdukt = new TestProdukt()
+        var anderesProdukt = defaultProdukt()
                 .mitProduktName("ein anderes Produkt");
         var konfiguration = new StandardProvision(anderesProdukt, null, geldProGeschaeft);
         produkte.add(produkt);
@@ -117,9 +119,9 @@ public class StandardBerechnungTest {
     public void produktSpezifisch_geschaeftMitAnderemProdukt_nichtBerechnet() {
         // given
         var geldProGeschaeft = new BigDecimal(10);
-        var produkt = new TestProdukt()
+        var produkt = defaultProdukt()
                 .mitProduktName("ein Produkt");
-        var anderesProdukt = new TestProdukt()
+        var anderesProdukt = defaultProdukt()
                 .mitProduktName("ein anderes Produkt");
         var konfiguration = new StandardProvision(produkt, null, geldProGeschaeft);
         produkte.add(produkt);
@@ -140,7 +142,7 @@ public class StandardBerechnungTest {
     public void produktSpezifisch_geschaeftKeinSale_nichtBerechnet() {
         // given
         var geldProGeschaeft = new BigDecimal(10);
-        var produkt = new TestProdukt();
+        var produkt = defaultProdukt();
         var konfiguration = new StandardProvision(produkt, null, geldProGeschaeft);
         produkte.add(produkt);
         geschaefte.addAll(erstelleGeschaefte(produkt, null, 1, Geschaeft.Status.LEAD));
@@ -159,8 +161,8 @@ public class StandardBerechnungTest {
     public void vermittlerSpezifisch_berechnet() throws InterruptedException {
         // given
         var geldProGeschaeft = new BigDecimal(10);
-        var produkt = new TestProdukt();
-        var vermittler = new TestVermittler();
+        var produkt = defaultProdukt();
+        var vermittler = defaultVermittler();
         var konfiguration = new StandardProvision(produkt, vermittler, geldProGeschaeft);
         produkte.add(produkt);
         vermittler_.add(vermittler);
@@ -181,8 +183,8 @@ public class StandardBerechnungTest {
     public void vermittlerSpezifisch_100Geschaefte_berechnet() {
         // given
         var geldProGeschaeft = new BigDecimal(10);
-        var produkt = new TestProdukt();
-        var vermittler = new TestVermittler();
+        var produkt = defaultProdukt();
+        var vermittler = defaultVermittler();
         var konfiguration = new StandardProvision(produkt, vermittler, geldProGeschaeft);
         produkte.add(produkt);
         vermittler_.add(vermittler);
@@ -202,11 +204,11 @@ public class StandardBerechnungTest {
     public void vermittlerSpezifisch_konfigurationMitAnderemProdukt_nichtBerechnet() {
         // given
         var geldProGeschaeft = new BigDecimal(10);
-        var produkt = new TestProdukt()
+        var produkt = defaultProdukt()
                 .mitProduktName("ein Produkt");
-        var anderesProdukt = new TestProdukt()
+        var anderesProdukt = defaultProdukt()
                 .mitProduktName("ein anderes Produkt");
-        var vermittler = new TestVermittler();
+        var vermittler = defaultVermittler();
         var konfiguration = new StandardProvision(anderesProdukt, vermittler, geldProGeschaeft);
         produkte.add(produkt);
         produkte.add(anderesProdukt);
@@ -227,11 +229,11 @@ public class StandardBerechnungTest {
     public void vermittlerSpezifisch_geschaeftMitAnderemProdukt_nichtBerechnet() {
         // given
         var geldProGeschaeft = new BigDecimal(10);
-        var produkt = new TestProdukt()
+        var produkt = defaultProdukt()
                 .mitProduktName("ein Produkt");
-        var anderesProdukt = new TestProdukt()
+        var anderesProdukt = defaultProdukt()
                 .mitProduktName("ein anderes Produkt");
-        var vermittler = new TestVermittler();
+        var vermittler = defaultVermittler();
         var konfiguration = new StandardProvision(produkt, vermittler, geldProGeschaeft);
         produkte.add(produkt);
         produkte.add(anderesProdukt);
@@ -252,10 +254,10 @@ public class StandardBerechnungTest {
     public void vermittlerSpezifisch_konfigurationMitAnderemVermittler_nichtBerechnet() {
         // given
         var geldProGeschaeft = new BigDecimal(10);
-        var produkt = new TestProdukt();
-        var vermittler = new TestVermittler()
+        var produkt = defaultProdukt();
+        var vermittler = defaultVermittler()
                 .mitVermittlerNummer("eine Vermittlernummer");
-        var andererVermittler = new TestVermittler()
+        var andererVermittler = defaultVermittler()
                 .mitVermittlerNummer("eine andere Vermittlernummer");
         var konfiguration = new StandardProvision(produkt, andererVermittler, geldProGeschaeft);
         produkte.add(produkt);
@@ -277,10 +279,10 @@ public class StandardBerechnungTest {
     public void vermittlerSpezifisch_geschaeftMitAnderemVermittler_nichtBerechnet() {
         // given
         var geldProGeschaeft = new BigDecimal(10);
-        var produkt = new TestProdukt();
-        var vermittler = new TestVermittler()
+        var produkt = defaultProdukt();
+        var vermittler = defaultVermittler()
                 .mitVermittlerNummer("eine Vermittlernummer");
-        var andererVermittler = new TestVermittler()
+        var andererVermittler = defaultVermittler()
                 .mitVermittlerNummer("eine andere Vermittlernummer");
         var konfiguration = new StandardProvision(produkt, vermittler, geldProGeschaeft);
         geschaefte.addAll(erstelleGeschaefte(produkt, andererVermittler, 1));
@@ -301,8 +303,8 @@ public class StandardBerechnungTest {
     public void vermittlerSpezifisch_geschaeftKeinSale_nichtBerechnet() {
         // given
         var geldProGeschaeft = new BigDecimal(10);
-        var produkt = new TestProdukt();
-        var vermittler = new TestVermittler();
+        var produkt = defaultProdukt();
+        var vermittler = defaultVermittler();
         var konfiguration = new StandardProvision(produkt, vermittler, geldProGeschaeft);
         produkte.add(produkt);
         vermittler_.add(vermittler);

@@ -22,9 +22,11 @@ public class Berechnung {
     public void berechneProduktSpezifischeKonfigs() {
         var summe = BigDecimal.ZERO;
         for(var produkt : berechnungInputPort.alleProdukte()) {
-            for(var konfiguration : berechnungInputPort.alleKonfigurationen(produkt)) {
-                var geschaefte = berechnungInputPort.unberechneteGeschaefte(produkt);
-                summe = summe.add(berechneGeschaefte(geschaefte, konfiguration));
+            if(produkt.istAktiv()) {
+                for (var konfiguration : berechnungInputPort.alleKonfigurationen(produkt)) {
+                    var geschaefte = berechnungInputPort.unberechneteGeschaefte(produkt);
+                    summe = summe.add(berechneGeschaefte(geschaefte, konfiguration));
+                }
             }
         }
         berechnungOutputPort.infoAnFreigebende(summe);
@@ -39,9 +41,11 @@ public class Berechnung {
         var summe = BigDecimal.ZERO;
         for(var vermittler : berechnungInputPort.alleVermittler()) {
             for(var produkt : berechnungInputPort.alleProdukte()) {
-                for(var konfiguration : berechnungInputPort.alleKonfigurationen(produkt, vermittler)) {
-                    var geschaefte = berechnungInputPort.unberechneteGeschaefte(vermittler, produkt);
-                    summe = summe.add(berechneGeschaefte(geschaefte, konfiguration));
+                if(produkt.istAktiv()) {
+                    for (var konfiguration : berechnungInputPort.alleKonfigurationen(produkt, vermittler)) {
+                        var geschaefte = berechnungInputPort.unberechneteGeschaefte(vermittler, produkt);
+                        summe = summe.add(berechneGeschaefte(geschaefte, konfiguration));
+                    }
                 }
             }
         }

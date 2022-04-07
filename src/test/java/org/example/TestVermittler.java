@@ -6,7 +6,12 @@ import java.util.UUID;
 
 public class TestVermittler implements Vermittler {
 
-    private String vermittlerNummer = UUID.randomUUID().toString();
+    private String vermittlerNummer;
+
+    public static TestVermittler defaultVermittler() {
+        return new TestVermittler()
+                .mitVermittlerNummer(UUID.randomUUID().toString());
+    }
 
     @Override
     public String vermittlerNummer() {
