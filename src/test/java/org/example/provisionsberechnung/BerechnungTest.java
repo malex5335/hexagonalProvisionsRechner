@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.example.TestGeschaeft.defaultGeschaeft;
@@ -104,7 +105,7 @@ public class BerechnungTest {
     }
 
     @Test
-    public void vermittlerSpezifisch_erfolgreichBerechnet() {
+    public void vermittlerSpezifisch_erfolgreichBerechnet() throws InterruptedException {
         // given
         var geschaeft = defaultGeschaeft()
                 .mitProdukt(produkt)
@@ -113,6 +114,8 @@ public class BerechnungTest {
         konfiguration.mitVermittler(vermittler);
 
         // when
+        // TODO: why do I need to wait 1ms so that java can update all references?
+        TimeUnit.MILLISECONDS.sleep(1);
         berechnung.berechneVermittlerSpezifischeKonfigs();
 
         // then
@@ -122,13 +125,15 @@ public class BerechnungTest {
     }
 
     @Test
-    public void produktSpezifisch_erfolgreichBerechnet() {
+    public void produktSpezifisch_erfolgreichBerechnet() throws InterruptedException {
         // given
         var geschaeft = defaultGeschaeft()
                 .mitProdukt(produkt);
         geschaefte.add(geschaeft);
 
         // when
+        // TODO: why do I need to wait 1ms so that java can update all references?
+        TimeUnit.MILLISECONDS.sleep(1);
         berechnung.berechneProduktSpezifischeKonfigs();
 
         // then
