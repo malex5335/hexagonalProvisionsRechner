@@ -24,17 +24,17 @@ import static org.example.TestGeschaeft.defaultGeschaeft;
 
 public class StandardKonfigurationTest {
 
-    public static final List<Produkt> produkte = new ArrayList<>();
-    public static final List<Vermittler> vermittler_ = new ArrayList<>();
-    public static final List<Geschaeft> geschaefte = new ArrayList<>();
-    public static final List<Konfiguration> konfigurationen = new ArrayList<>();
-    public static BerechnungOutputTestAdapter outputAdapter;
-    public static BerechnungInputTestAdapter inputAdapter;
-    public static Berechnung berechnung;
-    public static TestVermittler vermittler;
-    public static TestProdukt produkt;
-    public static BigDecimal geldProGeschaeft;
-    public static StandardProvision konfiguration;
+    public final List<Produkt> produkte = new ArrayList<>();
+    public final List<Vermittler> vermittler_ = new ArrayList<>();
+    public final List<Geschaeft> geschaefte = new ArrayList<>();
+    public final List<Konfiguration> konfigurationen = new ArrayList<>();
+    public BerechnungOutputTestAdapter outputAdapter;
+    public BerechnungInputTestAdapter inputAdapter;
+    public Berechnung berechnung;
+    public TestVermittler vermittler;
+    public TestProdukt produkt;
+    public BigDecimal geldProGeschaeft;
+    public StandardProvision konfiguration;
 
     @BeforeEach
     void setUp() {
