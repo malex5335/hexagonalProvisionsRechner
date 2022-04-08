@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class BerechnungInputTestAdapter implements BerechnungInputPort {
+
     public List<Geschaeft> geschaefte = new ArrayList<>();
     public List<Provision> provisionen = new ArrayList<>();
     public List<Produkt> produkte = new ArrayList<>();

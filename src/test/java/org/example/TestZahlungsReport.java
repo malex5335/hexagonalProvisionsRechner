@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 public class TestZahlungsReport implements ZahlungsReport {
+
     public Map<Geschaeft, Map<Provision, BigDecimal>> reportDaten = new HashMap<>();
 
     public static TestZahlungsReport defaultZahlungsReport() {

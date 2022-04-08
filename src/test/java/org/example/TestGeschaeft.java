@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public class TestGeschaeft implements Geschaeft {
+
     private LocalDateTime anlieferDatum = LocalDateTime.now();
     private Produkt produkt;
     public List<Provision> fuerKonfigsBerechnet = new ArrayList<>();
