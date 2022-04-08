@@ -4,17 +4,18 @@ import org.example.provisionsberechnung.Geschaeft;
 import org.example.provisionsberechnung.Provision;
 import org.example.provisionsberechnung.Produkt;
 import org.example.provisionsberechnung.Vermittler;
+import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
 public class TestGeschaeft implements Geschaeft {
-    private LocalDateTime anlieferDatum;
+    private LocalDateTime anlieferDatum = LocalDateTime.now();
     private Produkt produkt;
     public List<Provision> fuerKonfigsBerechnet = new ArrayList<>();
     private Vermittler vermittler;
-    private Status status;
+    private Status status = Status.LEAD;
     private final Map<String, BigDecimal> volumenBetraege = new HashMap<>();
 
     public static TestGeschaeft defaultGeschaeft() {
@@ -23,31 +24,32 @@ public class TestGeschaeft implements Geschaeft {
                 .mitStatus(Geschaeft.Status.SALE);
     }
 
+
     @Override
-    public LocalDateTime anlieferDatum() {
-        return anlieferDatum;
+    public @NotNull LocalDateTime anlieferDatum() {
+        return this.anlieferDatum;
     }
 
     @Override
-    public boolean fuerVermittler(Vermittler vermittler) {
-        if(this.vermittler != null && vermittler != null) {
+    public boolean fuerVermittler(@NotNull Vermittler vermittler) {
+        if(this.vermittler != null) {
             return this.vermittler.vermittlerNummer().equals(vermittler.vermittlerNummer());
         }
-        return this.vermittler == null && vermittler == null;
+        return false;
     }
 
     @Override
-    public boolean fuerProdukt(Produkt produkt) {
+    public boolean fuerProdukt(@NotNull Produkt produkt) {
         return this.produkt.equals(produkt);
     }
 
     @Override
-    public Status status() {
-        return status;
+    public @NotNull Status status() {
+        return this.status;
     }
 
     @Override
-    public Map<String, BigDecimal> volumenBetraege() {
+    public @NotNull Map<String, BigDecimal> volumenBetraege() {
         return volumenBetraege;
     }
 

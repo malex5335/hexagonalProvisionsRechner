@@ -24,7 +24,7 @@ public class Berechnung {
     public void berechneProduktSpezifischeProvisionen() {
         var summe = BigDecimal.ZERO;
         for(var produkt : berechnungInputPort.alleProdukte()) {
-            if(produkt.istAktiv()) {
+            if(produkt.istJetztAktiv()) {
                 for (var provision : berechnungInputPort.alleProvisionen(produkt)) {
                     var geschaefte = berechnungInputPort.alleGeschaefte(produkt).stream()
                             .filter(g -> !g.istBerechnetFuerProvision(provision))
@@ -62,7 +62,7 @@ public class Berechnung {
     private BigDecimal berechneFuerVermittler(Vermittler ausProvision, Vermittler ausGeschaeften) {
         var summe = BigDecimal.ZERO;
         for(var produkt : berechnungInputPort.alleProdukte()) {
-            if(produkt.istAktiv()) {
+            if(produkt.istJetztAktiv()) {
                 for (var provision : berechnungInputPort.alleProvisionen(produkt, ausProvision)) {
                     var geschaefte = berechnungInputPort.alleGeschaefte(produkt, ausGeschaeften).stream()
                             .filter(g -> !g.istBerechnetFuerProvision(provision))

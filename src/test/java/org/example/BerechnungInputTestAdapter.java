@@ -1,6 +1,7 @@
 package org.example;
 
 import org.example.provisionsberechnung.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,14 +34,14 @@ public class BerechnungInputTestAdapter implements BerechnungInputPort {
     }
 
     @Override
-    public List<Provision> alleProvisionen(Produkt produkt) {
+    public @NotNull List<Provision> alleProvisionen(@NotNull Produkt produkt) {
         return provisionen.stream()
                 .filter(k -> k.fuerProdukt(produkt))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<Provision> alleProvisionen(Produkt produkt, Vermittler vermittler) {
+    public @NotNull List<Provision> alleProvisionen(@NotNull Produkt produkt, @NotNull Vermittler vermittler) {
         return provisionen.stream()
                 .filter(k -> k.fuerProdukt(produkt))
                 .filter(k -> k.fuerVermittler(vermittler))
@@ -48,24 +49,24 @@ public class BerechnungInputTestAdapter implements BerechnungInputPort {
     }
 
     @Override
-    public List<Produkt> alleProdukte() {
+    public @NotNull List<Produkt> alleProdukte() {
         return produkte;
     }
 
     @Override
-    public List<Vermittler> alleVermittler() {
+    public @NotNull List<Vermittler> alleVermittler() {
         return vermittler_;
     }
 
     @Override
-    public List<Geschaeft> alleGeschaefte(Produkt produkt) {
+    public @NotNull List<Geschaeft> alleGeschaefte(@NotNull Produkt produkt) {
         return geschaefte.stream()
                 .filter(g -> g.fuerProdukt(produkt))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<Geschaeft> alleGeschaefte(Produkt produkt, Vermittler vermittler) {
+    public @NotNull List<Geschaeft> alleGeschaefte(@NotNull Produkt produkt, @NotNull Vermittler vermittler) {
         return geschaefte.stream()
                 .filter(g -> g.fuerProdukt(produkt))
                 .filter(g -> g.fuerVermittler(vermittler))

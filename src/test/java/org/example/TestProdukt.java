@@ -1,6 +1,7 @@
 package org.example;
 
 import org.example.provisionsberechnung.Produkt;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -16,12 +17,12 @@ public class TestProdukt implements Produkt {
     }
 
     @Override
-    public String produktName() {
+    public @NotNull String produktName() {
         return produktName;
     }
 
     @Override
-    public boolean istAktiv() {
+    public boolean istJetztAktiv() {
         return aktiv;
     }
 

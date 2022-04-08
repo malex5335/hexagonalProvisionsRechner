@@ -1,5 +1,7 @@
 package org.example.provisionsberechnung;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 public interface BerechnungInputPort {
@@ -10,7 +12,8 @@ public interface BerechnungInputPort {
      * @param produkt dieses Produkt ist an der Provision konfiguriert
      * @return eine Liste
      */
-    List<Provision> alleProvisionen(final Produkt produkt);
+    @NotNull
+    List<Provision> alleProvisionen(@NotNull final Produkt produkt);
 
     /**
      * gibt alle Provisionen zurück, die für dieses Produkt und dieser Vermittler gelten
@@ -20,13 +23,15 @@ public interface BerechnungInputPort {
      *                   bei null wird nach Provisionen ohne Vermittler gesucht
      * @return eine Liste
      */
-    List<Provision> alleProvisionen(final Produkt produkt, final Vermittler vermittler);
+    @NotNull
+    List<Provision> alleProvisionen(@NotNull final Produkt produkt, @NotNull final Vermittler vermittler);
 
     /**
      * gibt alle Produkte zurück, die das System kennt
      *
      * @return eine Liste
      */
+    @NotNull
     List<Produkt> alleProdukte();
 
     /**
@@ -34,6 +39,7 @@ public interface BerechnungInputPort {
      *
      * @return eine Liste
      */
+    @NotNull
     List<Vermittler> alleVermittler();
 
     /**
@@ -42,7 +48,8 @@ public interface BerechnungInputPort {
      * @param produkt dieses Produkt ist an dem Geschaeft konfiguriert
      * @return eine Liste
      */
-    List<Geschaeft> alleGeschaefte(final Produkt produkt);
+    @NotNull
+    List<Geschaeft> alleGeschaefte(@NotNull final Produkt produkt);
 
     /**
      * gibt alle Geschaefte zurück, die diesem Produkt und diesem Vermittler zugeordnet sind
@@ -52,5 +59,6 @@ public interface BerechnungInputPort {
      *                   bei null wird nach Provisionen ohne Vermittler gesucht
      * @return eine Liste
      */
-    List<Geschaeft> alleGeschaefte(final Produkt produkt, final Vermittler vermittler);
+    @NotNull
+    List<Geschaeft> alleGeschaefte(@NotNull final Produkt produkt, @NotNull final Vermittler vermittler);
 }

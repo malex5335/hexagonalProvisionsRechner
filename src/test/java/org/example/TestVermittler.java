@@ -1,6 +1,7 @@
 package org.example;
 
 import org.example.provisionsberechnung.Vermittler;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -15,7 +16,7 @@ public class TestVermittler implements Vermittler {
     }
 
     @Override
-    public String vermittlerNummer() {
+    public @NotNull String vermittlerNummer() {
         return this.vermittlerNummer;
     }
 
