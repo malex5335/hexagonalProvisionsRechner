@@ -9,11 +9,11 @@ import java.util.List;
 
 public class BerechnungOutputTestAdapter implements BerechnungOutputPort {
 
-    public BigDecimal summe;
+    public BigDecimal summe = BigDecimal.ZERO;
 
     @Override
     public void infoAnFreigebende(BigDecimal summe) {
-        this.summe = summe;
+        this.summe = this.summe.add(summe);
     }
 
     @Override

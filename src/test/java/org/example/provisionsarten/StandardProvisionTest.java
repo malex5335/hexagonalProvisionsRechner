@@ -80,7 +80,7 @@ public class StandardProvisionTest {
         // when
         // TODO: why do I need to wait 1ms so that java can update all references? || this was here before parameter test!
         TimeUnit.MILLISECONDS.sleep(1);
-        berechnung.berechneProduktSpezifischeProvisioenn();
+        berechnung.berechneProduktSpezifischeProvisionen();
 
         // then
         assertThat(outputAdapter.summe)
@@ -99,7 +99,7 @@ public class StandardProvisionTest {
         geschaefte_.addAll(erstelleGeschaefte(produkt, null, 1));
 
         // when
-        berechnung.berechneProduktSpezifischeProvisioenn();
+        berechnung.berechneProduktSpezifischeProvisionen();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
@@ -116,7 +116,7 @@ public class StandardProvisionTest {
         geschaefte_.addAll(erstelleGeschaefte(anderesProdukt, null, 1));
 
         // when
-        berechnung.berechneProduktSpezifischeProvisioenn();
+        berechnung.berechneProduktSpezifischeProvisionen();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
@@ -130,7 +130,7 @@ public class StandardProvisionTest {
         geschaefte_.addAll(erstelleGeschaefte(produkt, null, 1, Geschaeft.Status.LEAD));
 
         // when
-        berechnung.berechneProduktSpezifischeProvisioenn();
+        berechnung.berechneProduktSpezifischeProvisionen();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
@@ -237,7 +237,7 @@ public class StandardProvisionTest {
         geschaefte_.addAll(erstelleGeschaefte(produkt, vermittler, 1, Geschaeft.Status.LEAD));
 
         // when
-        berechnung.berechneProduktSpezifischeProvisioenn();
+        berechnung.berechneProduktSpezifischeProvisionen();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);

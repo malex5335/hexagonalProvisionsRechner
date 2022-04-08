@@ -95,7 +95,7 @@ public class VolumenStandardProvisionTest {
         // when
         // TODO: why do I need to wait 1ms so that java can update all references? || this was here before parameter test!
         TimeUnit.MILLISECONDS.sleep(1);
-        berechnung.berechneProduktSpezifischeProvisioenn();
+        berechnung.berechneProduktSpezifischeProvisionen();
 
         //then
         assertThat(outputAdapter.summe).isEqualByComparingTo(ergebnis);
@@ -120,7 +120,7 @@ public class VolumenStandardProvisionTest {
         // when
         // TODO: why do I need to wait 1ms so that java can update all references? || this was here before parameter test!
         TimeUnit.MILLISECONDS.sleep(1);
-        berechnung.berechneProduktSpezifischeProvisioenn();
+        berechnung.berechneVermittlerSpezifischeProvisionen();
 
         //then
         assertThat(outputAdapter.summe).isEqualByComparingTo(ergebnis);

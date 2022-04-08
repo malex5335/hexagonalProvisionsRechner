@@ -7,10 +7,7 @@ import org.example.provisionsberechnung.Vermittler;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TestGeschaeft implements Geschaeft {
     private LocalDateTime anlieferDatum;
@@ -33,7 +30,10 @@ public class TestGeschaeft implements Geschaeft {
 
     @Override
     public boolean fuerVermittler(Vermittler vermittler) {
-        return this.vermittler.vermittlerNummer().equals(vermittler.vermittlerNummer());
+        if(this.vermittler != null && vermittler != null) {
+            return this.vermittler.vermittlerNummer().equals(vermittler.vermittlerNummer());
+        }
+        return this.vermittler == null && vermittler == null;
     }
 
     @Override

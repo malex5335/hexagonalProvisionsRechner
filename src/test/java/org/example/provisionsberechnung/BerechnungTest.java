@@ -69,6 +69,76 @@ public class BerechnungTest {
     }
 
     @Test
+    public void vermittlerUndProduktProvision_vermittlerBerechnet_produktBerechnet() throws InterruptedException {
+        // given
+        var geschaeft = defaultGeschaeft()
+                .mitProdukt(produkt)
+                .mitVermittler(vermittler);
+        var vermittlerProvision = defaultProvision()
+                .mitProdukt(produkt)
+                .mitGeldProGeschaeft(geldProGeschaeft)
+                .mitVermittler(vermittler);
+        geschaefte_.add(geschaeft);
+        provisionen_.add(vermittlerProvision);
+
+        // when
+        // TODO: why do I need to wait 1ms so that java can update all references?
+        TimeUnit.MILLISECONDS.sleep(1);
+        berechnung.berechneVermittlerSpezifischeProvisionen();
+        berechnung.berechneProduktSpezifischeProvisionen();
+
+        // then
+        assertThat(outputAdapter.summe).isEqualByComparingTo(geldProGeschaeft.multiply(new BigDecimal(2)));
+        // produkt provision nicht berechnet
+        assertTrue(geschaefte_.stream()
+                .allMatch(g -> g.istBerechnetFuerProvision(provision)));
+        // vermittler provision berechnet
+        assertTrue(geschaefte_.stream()
+                .allMatch(g -> g.istBerechnetFuerProvision(vermittlerProvision)));
+    }
+
+    @Test
+    public void keineVermittlerProvision_produktBerechnet() throws InterruptedException {
+        // given
+        var geschaeft = defaultGeschaeft()
+                .mitProdukt(produkt)
+                .mitVermittler(vermittler);
+        geschaefte_.add(geschaeft);
+
+        // when
+        // TODO: why do I need to wait 1ms so that java can update all references?
+        TimeUnit.MILLISECONDS.sleep(1);
+        berechnung.berechneVermittlerSpezifischeProvisionen();
+        berechnung.berechneProduktSpezifischeProvisionen();
+
+        // then
+        assertThat(outputAdapter.summe).isEqualByComparingTo(geldProGeschaeft);
+        assertTrue(geschaefte_.stream()
+                .allMatch(g -> g.istBerechnetFuerProvision(provision)));
+    }
+
+    @Test
+    public void keineProduktProvision_vermittlerBerechnet() throws InterruptedException {
+        // given
+        var geschaeft = defaultGeschaeft()
+                .mitProdukt(produkt)
+                .mitVermittler(vermittler);
+        provision.mitVermittler(vermittler);
+        geschaefte_.add(geschaeft);
+
+        // when
+        // TODO: why do I need to wait 1ms so that java can update all references?
+        TimeUnit.MILLISECONDS.sleep(1);
+        berechnung.berechneVermittlerSpezifischeProvisionen();
+        berechnung.berechneProduktSpezifischeProvisionen();
+
+        // then
+        assertThat(outputAdapter.summe).isEqualByComparingTo(geldProGeschaeft);
+        assertTrue(geschaefte_.stream()
+                .allMatch(g -> g.istBerechnetFuerProvision(provision)));
+    }
+
+    @Test
     public void vermittlerSpezifisch_geschaefteVonUntervermittler_erfolgreichBerechnet() throws InterruptedException {
         // given
         var unterVermittler = defaultVermittler()
@@ -160,7 +230,7 @@ public class BerechnungTest {
         geschaefte_.add(geschaeft);
 
         // when
-        berechnung.berechneProduktSpezifischeProvisioenn();
+        berechnung.berechneProduktSpezifischeProvisionen();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
@@ -198,7 +268,7 @@ public class BerechnungTest {
         // when
         // TODO: why do I need to wait 1ms so that java can update all references?
         TimeUnit.MILLISECONDS.sleep(1);
-        berechnung.berechneProduktSpezifischeProvisioenn();
+        berechnung.berechneProduktSpezifischeProvisionen();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(geldProGeschaeft);
@@ -234,7 +304,7 @@ public class BerechnungTest {
         produkt.mitAktiv(false);
 
         // when
-        berechnung.berechneProduktSpezifischeProvisioenn();
+        berechnung.berechneProduktSpezifischeProvisionen();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
@@ -272,7 +342,7 @@ public class BerechnungTest {
         geschaefte_.add(geschaeft);
 
         // when
-        berechnung.berechneProduktSpezifischeProvisioenn();
+        berechnung.berechneProduktSpezifischeProvisionen();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);

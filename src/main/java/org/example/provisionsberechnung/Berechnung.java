@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Berechnung {
     public BerechnungInputPort berechnungInputPort;
@@ -20,12 +21,14 @@ public class Berechnung {
      * ausgezahltes Geld wird addiert und mittels
      * {@link BerechnungOutputPort#infoAnFreigebende(BigDecimal)} weiterverarbeitet
      */
-    public void berechneProduktSpezifischeProvisioenn() {
+    public void berechneProduktSpezifischeProvisionen() {
         var summe = BigDecimal.ZERO;
         for(var produkt : berechnungInputPort.alleProdukte()) {
             if(produkt.istAktiv()) {
                 for (var provision : berechnungInputPort.alleProvisionen(produkt)) {
-                    var geschaefte = berechnungInputPort.unberechneteGeschaefte(produkt);
+                    var geschaefte = berechnungInputPort.alleGeschaefte(produkt).stream()
+                            .filter(g -> !g.istBerechnetFuerProvision(provision))
+                            .collect(Collectors.toList());;
                     summe = summe.add(berechneGeschaefte(geschaefte, provision));
                 }
             }
@@ -54,14 +57,16 @@ public class Berechnung {
      * @param ausProvision  der Vermittler dessen Provision berechnet werden
      * @param ausGeschaeften    der Vermittler dessen Geschaefte berechnet werden
      * @return  eine Summe an Geld, welche berechnet werde<br>
-     *          als Standard wird {@link BigDecimal.ZERO} zurückgegeben
+     *          als Standard wird {@link BigDecimal#ZERO} zurückgegeben
      */
     private BigDecimal berechneFuerVermittler(Vermittler ausProvision, Vermittler ausGeschaeften) {
         var summe = BigDecimal.ZERO;
         for(var produkt : berechnungInputPort.alleProdukte()) {
             if(produkt.istAktiv()) {
                 for (var provision : berechnungInputPort.alleProvisionen(produkt, ausProvision)) {
-                    var geschaefte = berechnungInputPort.unberechneteGeschaefte(ausGeschaeften, produkt);
+                    var geschaefte = berechnungInputPort.alleGeschaefte(produkt, ausGeschaeften).stream()
+                            .filter(g -> !g.istBerechnetFuerProvision(provision))
+                            .collect(Collectors.toList());
                     summe = summe.add(berechneGeschaefte(geschaefte, provision));
                 }
             }

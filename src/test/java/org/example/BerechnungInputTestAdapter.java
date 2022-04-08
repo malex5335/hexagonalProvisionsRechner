@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 public class BerechnungInputTestAdapter implements BerechnungInputPort {
     public List<Geschaeft> geschaefte = new ArrayList<>();
-    public List<Provision> konfigurationen = new ArrayList<>();
+    public List<Provision> provisionen = new ArrayList<>();
     public List<Produkt> produkte = new ArrayList<>();
     public List<Vermittler> vermittler_ = new ArrayList<>();
 
@@ -18,7 +18,7 @@ public class BerechnungInputTestAdapter implements BerechnungInputPort {
     }
 
     public BerechnungInputTestAdapter mitProvisionen(List<Provision> provision) {
-        konfigurationen = provision;
+        provisionen = provision;
         return this;
     }
 
@@ -34,16 +34,16 @@ public class BerechnungInputTestAdapter implements BerechnungInputPort {
 
     @Override
     public List<Provision> alleProvisionen(Produkt produkt) {
-        return konfigurationen.stream()
+        return provisionen.stream()
                 .filter(k -> k.fuerProdukt(produkt))
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<Provision> alleProvisionen(Produkt produkt, Vermittler vermittler) {
-        return konfigurationen.stream()
-                .filter(k -> k.fuerVermittler(vermittler))
+        return provisionen.stream()
                 .filter(k -> k.fuerProdukt(produkt))
+                .filter(k -> k.fuerVermittler(vermittler))
                 .collect(Collectors.toList());
     }
 
@@ -53,26 +53,22 @@ public class BerechnungInputTestAdapter implements BerechnungInputPort {
     }
 
     @Override
-    public List<Geschaeft> unberechneteGeschaefte(Produkt produkt) {
-        return geschaefte.stream()
-                .filter(g -> g.fuerProdukt(produkt))
-                .filter(g -> konfigurationen.stream()
-                        .noneMatch(g::istBerechnetFuerProvision))
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public List<Vermittler> alleVermittler() {
         return vermittler_;
     }
 
     @Override
-    public List<Geschaeft> unberechneteGeschaefte(Vermittler vermittler, Produkt produkt) {
+    public List<Geschaeft> alleGeschaefte(Produkt produkt) {
         return geschaefte.stream()
-                .filter(g -> g.fuerVermittler(vermittler))
                 .filter(g -> g.fuerProdukt(produkt))
-                .filter(g -> konfigurationen.stream()
-                        .noneMatch(g::istBerechnetFuerProvision))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Geschaeft> alleGeschaefte(Produkt produkt, Vermittler vermittler) {
+        return geschaefte.stream()
+                .filter(g -> g.fuerProdukt(produkt))
+                .filter(g -> g.fuerVermittler(vermittler))
                 .collect(Collectors.toList());
     }
 }

@@ -8,6 +8,7 @@ import org.example.provisionsberechnung.Vermittler;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.util.Objects;
 
 public class StandardVolumenProvision implements Provision {
 
@@ -56,6 +57,6 @@ public class StandardVolumenProvision implements Provision {
         if(this.vermittler != null && vermittler != null) {
             return this.vermittler.vermittlerNummer().equals(vermittler.vermittlerNummer());
         }
-        return vermittler == null;
+        return Objects.equals(vermittler, this.vermittler);
     }
 }
