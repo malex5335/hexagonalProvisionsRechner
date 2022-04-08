@@ -44,6 +44,14 @@ public class TestGeschaeft implements Geschaeft {
     }
 
     @Override
+    public @NotNull Vermittler vermittler() {
+        if(this.vermittler == null) {
+            return new TestVermittler();
+        }
+        return this.vermittler;
+    }
+
+    @Override
     public @NotNull Status status() {
         return this.status;
     }

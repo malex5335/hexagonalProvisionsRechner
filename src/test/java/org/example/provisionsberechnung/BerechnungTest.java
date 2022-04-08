@@ -69,6 +69,43 @@ public class BerechnungTest {
     }
 
     @Test
+    public void vermittlerSpezifisch_vermittlerKenntGeschaefte_mitBetraegen() throws InterruptedException {
+        // given
+        var geschaeft = defaultGeschaeft()
+                .mitProdukt(produkt)
+                .mitVermittler(vermittler);
+        provision.mitVermittler(vermittler);
+        geschaefte_.add(geschaeft);
+
+        // when
+        // TODO: why do I need to wait 1ms so that java can update all references?
+        TimeUnit.MILLISECONDS.sleep(1);
+        berechnung.berechneVermittlerSpezifischeProvisionen();
+
+        // then
+        assertThat(vermittler.zahlungsReport().berechneteGeschaefte()).contains(geschaeft);
+        assertThat(vermittler.zahlungsReport().provisionenFuerGeschaeft(geschaeft)).contains(provision);
+        assertThat(vermittler.zahlungsReport().betragFuerGeschaeft(geschaeft, provision))
+                .isEqualByComparingTo(geldProGeschaeft);
+    }
+
+    @Test
+    public void produktSpezifisch_vermittlerKenntGeschaefte_mitBetraegen() throws InterruptedException {
+        // given
+        var geschaeft = defaultGeschaeft()
+                .mitProdukt(produkt)
+                .mitVermittler(vermittler);
+        geschaefte_.add(geschaeft);
+
+        // when
+        // TODO: why do I need to wait 1ms so that java can update all references?
+        TimeUnit.MILLISECONDS.sleep(1);
+        berechnung.berechneProduktSpezifischeProvisionen();
+
+        // then
+    }
+
+    @Test
     public void vermittlerUndProduktProvision_vermittlerBerechnet_produktBerechnet() throws InterruptedException {
         // given
         var geschaeft = defaultGeschaeft()
@@ -88,7 +125,7 @@ public class BerechnungTest {
         berechnung.berechneProduktSpezifischeProvisionen();
 
         // then
-        assertThat(outputAdapter.summe).isEqualByComparingTo(geldProGeschaeft.multiply(new BigDecimal(2)));
+        assertThat(outputAdapter.geldFuerVermittler(vermittler)).isEqualByComparingTo(geldProGeschaeft.multiply(new BigDecimal(2)));
         // produkt provision nicht berechnet
         assertTrue(geschaefte_.stream()
                 .allMatch(g -> g.istBerechnetFuerProvision(provision)));
@@ -112,7 +149,7 @@ public class BerechnungTest {
         berechnung.berechneProduktSpezifischeProvisionen();
 
         // then
-        assertThat(outputAdapter.summe).isEqualByComparingTo(geldProGeschaeft);
+        assertThat(outputAdapter.geldFuerVermittler(vermittler)).isEqualByComparingTo(geldProGeschaeft);
         assertTrue(geschaefte_.stream()
                 .allMatch(g -> g.istBerechnetFuerProvision(provision)));
     }
@@ -133,7 +170,7 @@ public class BerechnungTest {
         berechnung.berechneProduktSpezifischeProvisionen();
 
         // then
-        assertThat(outputAdapter.summe).isEqualByComparingTo(geldProGeschaeft);
+        assertThat(outputAdapter.geldFuerVermittler(vermittler)).isEqualByComparingTo(geldProGeschaeft);
         assertTrue(geschaefte_.stream()
                 .allMatch(g -> g.istBerechnetFuerProvision(provision)));
     }
@@ -156,7 +193,7 @@ public class BerechnungTest {
         berechnung.berechneVermittlerSpezifischeProvisionen();
 
         // then
-        assertThat(outputAdapter.summe).isEqualByComparingTo(geldProGeschaeft);
+        assertThat(outputAdapter.geldFuerVermittler(unterVermittler)).isEqualByComparingTo(geldProGeschaeft);
         assertTrue(geschaefte_.stream()
                 .allMatch(g -> g.istBerechnetFuerProvision(provision)));
     }
@@ -177,7 +214,7 @@ public class BerechnungTest {
         berechnung.berechneVermittlerSpezifischeProvisionen();
 
         // then
-        assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(outputAdapter.geldFuerVermittler(vermittler)).isEqualByComparingTo(BigDecimal.ZERO);
         assertTrue(geschaefte_.stream()
                 .noneMatch(g -> g.istBerechnetFuerProvision(provision)));
     }
@@ -197,7 +234,7 @@ public class BerechnungTest {
         berechnung.berechneVermittlerSpezifischeProvisionen();
 
         // then
-        assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(outputAdapter.geldFuerVermittler(andererVermittler)).isEqualByComparingTo(BigDecimal.ZERO);
         assertTrue(geschaefte_.stream()
                 .noneMatch(g -> g.istBerechnetFuerProvision(provision)));
     }
@@ -216,7 +253,7 @@ public class BerechnungTest {
         berechnung.berechneVermittlerSpezifischeProvisionen();
 
         // then
-        assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(outputAdapter.geldFuerVermittler(vermittler)).isEqualByComparingTo(BigDecimal.ZERO);
         assertTrue(geschaefte_.stream()
                 .allMatch(g -> g.istBerechnetFuerProvision(provision)));
     }
@@ -226,6 +263,7 @@ public class BerechnungTest {
         // given
         var geschaeft = defaultGeschaeft()
                 .mitProdukt(produkt)
+                .mitVermittler(vermittler)
                 .mitBerechnetFuer(provision);
         geschaefte_.add(geschaeft);
 
@@ -233,7 +271,7 @@ public class BerechnungTest {
         berechnung.berechneProduktSpezifischeProvisionen();
 
         // then
-        assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(outputAdapter.geldFuerVermittler(vermittler)).isEqualByComparingTo(BigDecimal.ZERO);
         assertTrue(geschaefte_.stream()
                 .allMatch(g -> g.istBerechnetFuerProvision(provision)));
     }
@@ -253,7 +291,7 @@ public class BerechnungTest {
         berechnung.berechneVermittlerSpezifischeProvisionen();
 
         // then
-        assertThat(outputAdapter.summe).isEqualByComparingTo(geldProGeschaeft);
+        assertThat(outputAdapter.geldFuerVermittler(vermittler)).isEqualByComparingTo(geldProGeschaeft);
         assertTrue(geschaefte_.stream()
                 .allMatch(g -> g.istBerechnetFuerProvision(provision)));
     }
@@ -262,7 +300,8 @@ public class BerechnungTest {
     public void produktSpezifisch_erfolgreichBerechnet() throws InterruptedException {
         // given
         var geschaeft = defaultGeschaeft()
-                .mitProdukt(produkt);
+                .mitProdukt(produkt)
+                .mitVermittler(vermittler);
         geschaefte_.add(geschaeft);
 
         // when
@@ -271,7 +310,7 @@ public class BerechnungTest {
         berechnung.berechneProduktSpezifischeProvisionen();
 
         // then
-        assertThat(outputAdapter.summe).isEqualByComparingTo(geldProGeschaeft);
+        assertThat(outputAdapter.geldFuerVermittler(vermittler)).isEqualByComparingTo(geldProGeschaeft);
         assertTrue(geschaefte_.stream()
                 .allMatch(g -> g.istBerechnetFuerProvision(provision)));
     }
@@ -290,7 +329,7 @@ public class BerechnungTest {
         berechnung.berechneVermittlerSpezifischeProvisionen();
 
         // then
-        assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(outputAdapter.geldFuerVermittler(vermittler)).isEqualByComparingTo(BigDecimal.ZERO);
         assertTrue(geschaefte_.stream()
                 .noneMatch(g -> g.istBerechnetFuerProvision(provision)));
     }
@@ -299,7 +338,8 @@ public class BerechnungTest {
     public void produktSpezifisch_produktNichtAktiv_nichtBerechnet() {
         // given
         var geschaeft = defaultGeschaeft()
-                .mitProdukt(produkt);
+                .mitProdukt(produkt)
+                .mitVermittler(vermittler);
         geschaefte_.add(geschaeft);
         produkt.mitAktiv(false);
 
@@ -307,7 +347,7 @@ public class BerechnungTest {
         berechnung.berechneProduktSpezifischeProvisionen();
 
         // then
-        assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(outputAdapter.geldFuerVermittler(vermittler)).isEqualByComparingTo(BigDecimal.ZERO);
         assertTrue(geschaefte_.stream()
                 .noneMatch(g -> g.istBerechnetFuerProvision(provision)));
     }
@@ -327,7 +367,7 @@ public class BerechnungTest {
         berechnung.berechneVermittlerSpezifischeProvisionen();
 
         // then
-        assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(outputAdapter.geldFuerVermittler(vermittler)).isEqualByComparingTo(BigDecimal.ZERO);
         assertTrue(geschaefte_.stream()
                 .noneMatch(g -> g.istBerechnetFuerProvision(provision)));
     }
@@ -338,6 +378,7 @@ public class BerechnungTest {
         // given
         var geschaeft = defaultGeschaeft()
                 .mitProdukt(produkt)
+                .mitVermittler(vermittler)
                 .mitAnlieferDatum(LocalDate.now().atStartOfDay().minusDays(tageZurueck));
         geschaefte_.add(geschaeft);
 
@@ -345,7 +386,7 @@ public class BerechnungTest {
         berechnung.berechneProduktSpezifischeProvisionen();
 
         // then
-        assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(outputAdapter.geldFuerVermittler(vermittler)).isEqualByComparingTo(BigDecimal.ZERO);
         assertTrue(geschaefte_.stream()
                 .noneMatch(g -> g.istBerechnetFuerProvision(provision)));
 

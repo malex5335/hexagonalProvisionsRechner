@@ -3,8 +3,7 @@ package org.example.provisionsberechnung;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Berechnung {
@@ -19,59 +18,48 @@ public class Berechnung {
     /**
      * berechnet produktspezifische Provisionen
      * ausgezahltes Geld wird addiert und mittels
-     * {@link BerechnungOutputPort#infoAnFreigebende(BigDecimal)} weiterverarbeitet
+     * {@link BerechnungOutputPort#sendeBerechnungsInfos(Map)} weiterverarbeitet
      */
     public void berechneProduktSpezifischeProvisionen() {
-        var summe = BigDecimal.ZERO;
+        Map<Vermittler, BigDecimal> geldFuerVermittler = new HashMap<>();
         for(var produkt : berechnungInputPort.alleProdukte()) {
             if(produkt.istJetztAktiv()) {
                 for (var provision : berechnungInputPort.alleProvisionen(produkt)) {
-                    var geschaefte = berechnungInputPort.alleGeschaefte(produkt).stream()
+                    var geschaefteFuerVermittler = berechnungInputPort.alleGeschaefte(produkt).stream()
                             .filter(g -> !g.istBerechnetFuerProvision(provision))
-                            .collect(Collectors.toList());
-                    summe = summe.add(berechneGeschaefte(geschaefte, provision));
+                            .collect(Collectors.groupingBy(Geschaeft::vermittler));
+                    for(var vermittler : geschaefteFuerVermittler.keySet()) {
+                        var geschaefte = geschaefteFuerVermittler.get(vermittler);
+                        geldFuerVermittler.put(vermittler, berechneGeschaefte(vermittler, geschaefte, provision));
+                    }
                 }
             }
         }
-        berechnungOutputPort.infoAnFreigebende(summe);
+        berechnungOutputPort.sendeBerechnungsInfos(geldFuerVermittler);
     }
 
     /**
      * berechnet vermittlerspezifische Provisionen für Haupt- und Untervermittler
      * ausgezahltes Geld wird addiert und mittels
-     * {@link BerechnungOutputPort#infoAnFreigebende(BigDecimal)} weiterverarbeitet
+     * {@link BerechnungOutputPort#sendeBerechnungsInfos(Map)} weiterverarbeitet
      */
     public void berechneVermittlerSpezifischeProvisionen() {
-        var summe = BigDecimal.ZERO;
-        for(var vermittler : berechnungInputPort.alleVermittler()) {
-            var hauptVermittler = vermittler.hauptVermittler();
-            summe = summe.add(berechneFuerVermittler(Objects.requireNonNullElse(hauptVermittler, vermittler), vermittler));
-        }
-        berechnungOutputPort.infoAnFreigebende(summe);
-    }
-
-    /**
-     * berechnet vermittlerspezifische Provisionen
-     * ausgezahltes Geld wird addiert
-     *
-     * @param ausProvision  der Vermittler dessen Provision berechnet werden
-     * @param ausGeschaeften    der Vermittler dessen Geschaefte berechnet werden
-     * @return  eine Summe an Geld, welche berechnet werde<br>
-     *          als Standard wird {@link BigDecimal#ZERO} zurückgegeben
-     */
-    private BigDecimal berechneFuerVermittler(Vermittler ausProvision, Vermittler ausGeschaeften) {
-        var summe = BigDecimal.ZERO;
-        for(var produkt : berechnungInputPort.alleProdukte()) {
-            if(produkt.istJetztAktiv()) {
-                for (var provision : berechnungInputPort.alleProvisionen(produkt, ausProvision)) {
-                    var geschaefte = berechnungInputPort.alleGeschaefte(produkt, ausGeschaeften).stream()
-                            .filter(g -> !g.istBerechnetFuerProvision(provision))
-                            .collect(Collectors.toList());
-                    summe = summe.add(berechneGeschaefte(geschaefte, provision));
+        Map<Vermittler, BigDecimal> geldFuerVermittler = new HashMap<>();
+        for(var geschaeftsVermittler : berechnungInputPort.alleVermittler()) {
+            var hauptVermittler = geschaeftsVermittler.hauptVermittler();
+            var provisionsVermittler = Objects.requireNonNullElse(hauptVermittler, geschaeftsVermittler);
+            for(var produkt : berechnungInputPort.alleProdukte()) {
+                if(produkt.istJetztAktiv()) {
+                    for (var provision : berechnungInputPort.alleProvisionen(produkt, provisionsVermittler)) {
+                        var geschaefte = berechnungInputPort.alleGeschaefte(produkt, geschaeftsVermittler).stream()
+                                .filter(g -> !g.istBerechnetFuerProvision(provision))
+                                .collect(Collectors.toList());
+                        geldFuerVermittler.put(geschaeftsVermittler, berechneGeschaefte(geschaeftsVermittler, geschaefte, provision));
+                    }
                 }
             }
+            berechnungOutputPort.sendeBerechnungsInfos(geldFuerVermittler);
         }
-        return summe;
     }
 
     private boolean sollBerechnetWerden(Geschaeft geschaeft){
@@ -85,15 +73,22 @@ public class Berechnung {
         return zeitpunkt.isBefore(verganenheit);
     }
 
-    private BigDecimal berechneGeschaefte(List<Geschaeft> geschaefte, Provision provision) {
+    private BigDecimal berechneGeschaefte(Vermittler vermittler, List<Geschaeft> geschaefte, Provision provision) {
         var summe = BigDecimal.ZERO;
         for(var geschaeft : geschaefte) {
-            if(sollBerechnetWerden(geschaeft)) {
-                var geld = provision.berechneGeld(geschaeft);
-                berechnungOutputPort.markiereBerechnet(geschaefte, provision);
-                summe = summe.add(geld);
-            }
+            summe = summe.add(berechneGeschaeft(vermittler, geschaeft, provision));
         }
         return summe;
+    }
+
+    private BigDecimal berechneGeschaeft(Vermittler vermittler, Geschaeft geschaeft, Provision provision) {
+        if(sollBerechnetWerden(geschaeft)) {
+            var geld = provision.berechneGeld(geschaeft);
+            if(vermittler.ergaenzeInZahlungsReport(geschaeft, provision, geld)) {
+                berechnungOutputPort.markiereBerechnet(geschaeft, provision);
+            }
+            return geld;
+        }
+        return BigDecimal.ZERO;
     }
 }

@@ -87,6 +87,7 @@ public class VolumenStandardProvisionTest {
         var feld = UUID.randomUUID().toString();
         var geschaeft = defaultGeschaeft()
                 .mitProdukt(produkt)
+                .mitVermittler(vermittler)
                 .mitVolumenBetrag(feld, volumen);
         geschaefte_.add(geschaeft);
         provision.mitVolumenFeld(feld)
@@ -98,7 +99,7 @@ public class VolumenStandardProvisionTest {
         berechnung.berechneProduktSpezifischeProvisionen();
 
         //then
-        assertThat(outputAdapter.summe).isEqualByComparingTo(ergebnis);
+        assertThat(outputAdapter.geldFuerVermittler(vermittler)).isEqualByComparingTo(ergebnis);
         assertTrue(geschaefte_.stream()
                 .allMatch(g -> g.istBerechnetFuerProvision(provision)));
     }
@@ -123,7 +124,7 @@ public class VolumenStandardProvisionTest {
         berechnung.berechneVermittlerSpezifischeProvisionen();
 
         //then
-        assertThat(outputAdapter.summe).isEqualByComparingTo(ergebnis);
+        assertThat(outputAdapter.geldFuerVermittler(vermittler)).isEqualByComparingTo(ergebnis);
         assertTrue(geschaefte_.stream()
                 .allMatch(g -> g.istBerechnetFuerProvision(provision)));
 

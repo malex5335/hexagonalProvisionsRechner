@@ -5,6 +5,7 @@ import org.example.BerechnungOutputTestAdapter;
 import org.example.TestProdukt;
 import org.example.TestVermittler;
 import org.example.provisionsberechnung.*;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -75,7 +76,7 @@ public class StandardProvisionTest {
     @ValueSource(ints = {0, 1, 2, 10, 100, 5000})
     public void produktSpezifisch_berechnet(int geschaefteAnzahl) throws InterruptedException {
         // given
-        geschaefte_.addAll(erstelleGeschaefte(produkt, null, geschaefteAnzahl));
+        geschaefte_.addAll(erstelleGeschaefte(produkt, vermittler, geschaefteAnzahl));
 
         // when
         // TODO: why do I need to wait 1ms so that java can update all references? || this was here before parameter test!
@@ -83,7 +84,7 @@ public class StandardProvisionTest {
         berechnung.berechneProduktSpezifischeProvisionen();
 
         // then
-        assertThat(outputAdapter.summe)
+        assertThat(outputAdapter.geldFuerVermittler(vermittler))
                 .isEqualByComparingTo(geldProGeschaeft.multiply(new BigDecimal(geschaefteAnzahl)));
         assertTrue(geschaefte_.stream()
                 .allMatch(geschaeft -> geschaeft.istBerechnetFuerProvision(provision)));
@@ -96,13 +97,13 @@ public class StandardProvisionTest {
                 .mitProduktName("ein anderes Produkt");
         produkte_.add(anderesProdukt);
         provision.mitProdukt(anderesProdukt);
-        geschaefte_.addAll(erstelleGeschaefte(produkt, null, 1));
+        geschaefte_.addAll(erstelleGeschaefte(produkt, vermittler, 1));
 
         // when
         berechnung.berechneProduktSpezifischeProvisionen();
 
         // then
-        assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(outputAdapter.geldFuerVermittler(vermittler)).isEqualByComparingTo(BigDecimal.ZERO);
         assertTrue(geschaefte_.stream()
                 .noneMatch(geschaeft -> geschaeft.istBerechnetFuerProvision(provision)));
     }
@@ -113,13 +114,13 @@ public class StandardProvisionTest {
         var anderesProdukt = defaultProdukt()
                 .mitProduktName("ein anderes Produkt");
         produkte_.add(anderesProdukt);
-        geschaefte_.addAll(erstelleGeschaefte(anderesProdukt, null, 1));
+        geschaefte_.addAll(erstelleGeschaefte(anderesProdukt, vermittler, 1));
 
         // when
         berechnung.berechneProduktSpezifischeProvisionen();
 
         // then
-        assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(outputAdapter.geldFuerVermittler(vermittler)).isEqualByComparingTo(BigDecimal.ZERO);
         assertTrue(geschaefte_.stream()
                 .noneMatch(geschaeft -> geschaeft.istBerechnetFuerProvision(provision)));
     }
@@ -127,13 +128,13 @@ public class StandardProvisionTest {
     @Test
     public void produktSpezifisch_geschaeftKeinSale_nichtBerechnet() {
         // given
-        geschaefte_.addAll(erstelleGeschaefte(produkt, null, 1, Geschaeft.Status.LEAD));
+        geschaefte_.addAll(erstelleGeschaefte(produkt, vermittler, 1, Geschaeft.Status.LEAD));
 
         // when
         berechnung.berechneProduktSpezifischeProvisionen();
 
         // then
-        assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(outputAdapter.geldFuerVermittler(vermittler)).isEqualByComparingTo(BigDecimal.ZERO);
         assertTrue(geschaefte_.stream()
                 .noneMatch(geschaeft -> geschaeft.istBerechnetFuerProvision(provision)));
     }
@@ -151,7 +152,7 @@ public class StandardProvisionTest {
         berechnung.berechneVermittlerSpezifischeProvisionen();
 
         // then
-        assertThat(outputAdapter.summe)
+        assertThat(outputAdapter.geldFuerVermittler(vermittler))
                 .isEqualByComparingTo(geldProGeschaeft.multiply(new BigDecimal(geschaeftAnzahl)));
         assertTrue(geschaefte_.stream()
                 .allMatch(geschaeft -> geschaeft.istBerechnetFuerProvision(provision)));
@@ -171,7 +172,7 @@ public class StandardProvisionTest {
         berechnung.berechneVermittlerSpezifischeProvisionen();
 
         // then
-        assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(outputAdapter.geldFuerVermittler(vermittler)).isEqualByComparingTo(BigDecimal.ZERO);
         assertTrue(geschaefte_.stream()
                 .noneMatch(geschaeft -> geschaeft.istBerechnetFuerProvision(provision)));
     }
@@ -189,7 +190,7 @@ public class StandardProvisionTest {
         berechnung.berechneVermittlerSpezifischeProvisionen();
 
         // then
-        assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(outputAdapter.geldFuerVermittler(vermittler)).isEqualByComparingTo(BigDecimal.ZERO);
         assertTrue(geschaefte_.stream()
                 .noneMatch(geschaeft -> geschaeft.istBerechnetFuerProvision(provision)));
     }
@@ -207,7 +208,7 @@ public class StandardProvisionTest {
         berechnung.berechneVermittlerSpezifischeProvisionen();
 
         // then
-        assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(outputAdapter.geldFuerVermittler(vermittler)).isEqualByComparingTo(BigDecimal.ZERO);
         assertTrue(geschaefte_.stream()
                 .noneMatch(geschaeft -> geschaeft.istBerechnetFuerProvision(provision)));
     }
@@ -225,7 +226,7 @@ public class StandardProvisionTest {
         berechnung.berechneVermittlerSpezifischeProvisionen();
 
         // then
-        assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(outputAdapter.geldFuerVermittler(vermittler)).isEqualByComparingTo(BigDecimal.ZERO);
         assertTrue(geschaefte_.stream()
                 .noneMatch(geschaeft -> geschaeft.istBerechnetFuerProvision(provision)));
     }
@@ -240,16 +241,16 @@ public class StandardProvisionTest {
         berechnung.berechneProduktSpezifischeProvisionen();
 
         // then
-        assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(outputAdapter.geldFuerVermittler(vermittler)).isEqualByComparingTo(BigDecimal.ZERO);
         assertTrue(geschaefte_.stream()
                 .noneMatch(g -> g.istBerechnetFuerProvision(provision)));
     }
 
-    private List<Geschaeft> erstelleGeschaefte(Produkt produkt, Vermittler vermittler, int count) {
+    private List<Geschaeft> erstelleGeschaefte(Produkt produkt, @NotNull Vermittler vermittler, int count) {
         return erstelleGeschaefte(produkt, vermittler, count, null);
     }
 
-    private List<Geschaeft> erstelleGeschaefte(Produkt produkt, Vermittler vermittler, int count, Geschaeft.Status status) {
+    private List<Geschaeft> erstelleGeschaefte(Produkt produkt, @NotNull Vermittler vermittler, int count, Geschaeft.Status status) {
         var geschaefte = new ArrayList<Geschaeft>();
         while(--count >= 0) {
             var geschaeft = defaultGeschaeft()

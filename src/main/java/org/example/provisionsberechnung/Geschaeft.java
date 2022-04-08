@@ -33,6 +33,12 @@ public interface Geschaeft {
      */
     boolean fuerProdukt(@NotNull Produkt produkt);
 
+    /**
+     * @return der Vermittler der das Geschaeft bewirkt hat
+     */
+    @NotNull
+    Vermittler vermittler();
+
     enum Status {
         SALE, LEAD
     }
