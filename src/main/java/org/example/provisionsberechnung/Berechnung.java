@@ -28,7 +28,7 @@ public class Berechnung {
                 for (var provision : berechnungInputPort.alleProvisionen(produkt)) {
                     var geschaefte = berechnungInputPort.alleGeschaefte(produkt).stream()
                             .filter(g -> !g.istBerechnetFuerProvision(provision))
-                            .collect(Collectors.toList());;
+                            .collect(Collectors.toList());
                     summe = summe.add(berechneGeschaefte(geschaefte, provision));
                 }
             }
