@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import static org.example.provisionsberechnung.TestZahlungsReport.defaultZahlungsReport;
+import static org.example.TestZahlungsReport.defaultZahlungsReport;
 
 public class TestVermittler implements Vermittler {
 

@@ -1,5 +1,8 @@
-package org.example.provisionsberechnung;
+package org.example;
 
+import org.example.provisionsberechnung.Geschaeft;
+import org.example.provisionsberechnung.Provision;
+import org.example.provisionsberechnung.ZahlungsReport;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
