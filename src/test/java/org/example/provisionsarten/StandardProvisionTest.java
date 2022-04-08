@@ -22,87 +22,89 @@ import static org.example.TestVermittler.defaultVermittler;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.example.TestGeschaeft.defaultGeschaeft;
 
-public class StandardKonfigurationTest {
+public class StandardProvisionTest {
 
-    public final List<Produkt> produkte = new ArrayList<>();
+    public final List<Produkt> produkte_ = new ArrayList<>();
     public final List<Vermittler> vermittler_ = new ArrayList<>();
-    public final List<Geschaeft> geschaefte = new ArrayList<>();
-    public final List<Konfiguration> konfigurationen = new ArrayList<>();
+    public final List<Geschaeft> geschaefte_ = new ArrayList<>();
+    public final List<Provision> provisionen_ = new ArrayList<>();
     public BerechnungOutputTestAdapter outputAdapter;
     public BerechnungInputTestAdapter inputAdapter;
     public Berechnung berechnung;
     public TestVermittler vermittler;
     public TestProdukt produkt;
     public BigDecimal geldProGeschaeft;
-    public StandardProvision konfiguration;
+    public StandardProvision provision;
 
     @BeforeEach
     void setUp() {
         outputAdapter = new BerechnungOutputTestAdapter();
         inputAdapter = new BerechnungInputTestAdapter()
                 .mitVermittler(vermittler_)
-                .mitProukten(produkte)
-                .mitKonfigurationen(konfigurationen)
-                .mitGeschaeften(geschaefte);
+                .mitProukten(produkte_)
+                .mitProvisionen(provisionen_)
+                .mitGeschaeften(geschaefte_);
         berechnung = new Berechnung(inputAdapter, outputAdapter);
         vermittler = defaultVermittler();
         vermittler_.add(vermittler);
         produkt = defaultProdukt();
-        produkte.add(produkt);
+        produkte_.add(produkt);
         geldProGeschaeft = new BigDecimal(10);
-        konfiguration = new StandardProvision(produkt, vermittler, geldProGeschaeft);
-        konfigurationen.add(konfiguration);
+        provision = new StandardProvision()
+                .mitProdukt(produkt)
+                .mitGeldProGeschaeft(geldProGeschaeft);
+        provisionen_.add(provision);
     }
 
     @AfterEach
     void tearDown() {
-        produkte.clear();
+        produkte_.clear();
         vermittler_.clear();
-        geschaefte.clear();
-        konfigurationen.clear();
+        geschaefte_.clear();
+        provisionen_.clear();
         outputAdapter = null;
         inputAdapter = null;
         berechnung = null;
         vermittler = null;
         produkt = null;
         geldProGeschaeft = null;
-        konfiguration = null;
+        provision = null;
     }
 
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 2, 10, 100, 5000})
     public void produktSpezifisch_berechnet(int geschaefteAnzahl) throws InterruptedException {
         // given
-        geschaefte.addAll(erstelleGeschaefte(produkt, null, geschaefteAnzahl));
+        geschaefte_.addAll(erstelleGeschaefte(produkt, null, geschaefteAnzahl));
 
         // when
         // TODO: why do I need to wait 1ms so that java can update all references? || this was here before parameter test!
         TimeUnit.MILLISECONDS.sleep(1);
-        berechnung.berechneProduktSpezifischeKonfigs();
+        berechnung.berechneProduktSpezifischeProvisioenn();
 
         // then
         assertThat(outputAdapter.summe)
                 .isEqualByComparingTo(geldProGeschaeft.multiply(new BigDecimal(geschaefteAnzahl)));
-        assertTrue(geschaefte.stream()
-                .allMatch(geschaeft -> geschaeft.istBerechnetFuerKonfiguration(konfiguration)));
+        assertTrue(geschaefte_.stream()
+                .allMatch(geschaeft -> geschaeft.istBerechnetFuerProvision(provision)));
     }
 
     @Test
-    public void produktSpezifisch_konfigurationMitAnderemProdukt_nichtBerechnet() {
+    public void produktSpezifisch_provisionMitAnderemProdukt_nichtBerechnet() {
         // given
         var anderesProdukt = defaultProdukt()
                 .mitProduktName("ein anderes Produkt");
-        produkte.add(anderesProdukt);
-        konfiguration.mitProdukt(anderesProdukt);
-        geschaefte.addAll(erstelleGeschaefte(produkt, null, 1));
+        produkte_.add(anderesProdukt);
+        provision.mitProdukt(anderesProdukt);
+        geschaefte_.addAll(erstelleGeschaefte(produkt, null, 1));
 
         // when
-        berechnung.berechneProduktSpezifischeKonfigs();
+        berechnung.berechneProduktSpezifischeProvisioenn();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
-        assertTrue(geschaefte.stream()
-                .noneMatch(geschaeft -> geschaeft.istBerechnetFuerKonfiguration(konfiguration)));
+        assertTrue(geschaefte_.stream()
+                .noneMatch(geschaeft -> geschaeft.istBerechnetFuerProvision(provision)));
     }
 
     @Test
@@ -110,68 +112,68 @@ public class StandardKonfigurationTest {
         // given
         var anderesProdukt = defaultProdukt()
                 .mitProduktName("ein anderes Produkt");
-        produkte.add(anderesProdukt);
-        geschaefte.addAll(erstelleGeschaefte(anderesProdukt, null, 1));
+        produkte_.add(anderesProdukt);
+        geschaefte_.addAll(erstelleGeschaefte(anderesProdukt, null, 1));
 
         // when
-        berechnung.berechneProduktSpezifischeKonfigs();
+        berechnung.berechneProduktSpezifischeProvisioenn();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
-        assertTrue(geschaefte.stream()
-                .noneMatch(geschaeft -> geschaeft.istBerechnetFuerKonfiguration(konfiguration)));
+        assertTrue(geschaefte_.stream()
+                .noneMatch(geschaeft -> geschaeft.istBerechnetFuerProvision(provision)));
     }
 
     @Test
     public void produktSpezifisch_geschaeftKeinSale_nichtBerechnet() {
         // given
-        geschaefte.addAll(erstelleGeschaefte(produkt, null, 1, Geschaeft.Status.LEAD));
+        geschaefte_.addAll(erstelleGeschaefte(produkt, null, 1, Geschaeft.Status.LEAD));
 
         // when
-        berechnung.berechneProduktSpezifischeKonfigs();
+        berechnung.berechneProduktSpezifischeProvisioenn();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
-        assertTrue(geschaefte.stream()
-                .noneMatch(geschaeft -> geschaeft.istBerechnetFuerKonfiguration(konfiguration)));
+        assertTrue(geschaefte_.stream()
+                .noneMatch(geschaeft -> geschaeft.istBerechnetFuerProvision(provision)));
     }
 
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 2, 10, 100, 5000})
     public void vermittlerSpezifisch_berechnet(int geschaeftAnzahl) throws InterruptedException {
         // given
-        konfiguration.mitVermittler(vermittler);
-        geschaefte.addAll(erstelleGeschaefte(produkt, vermittler, geschaeftAnzahl));
+        provision.mitVermittler(vermittler);
+        geschaefte_.addAll(erstelleGeschaefte(produkt, vermittler, geschaeftAnzahl));
 
         // when
         // TODO: why do I need to wait 1ms so that java can update all references? || this was here before parameter test!
         TimeUnit.MILLISECONDS.sleep(1);
-        berechnung.berechneVermittlerSpezifischeKonfigs();
+        berechnung.berechneVermittlerSpezifischeProvisionen();
 
         // then
         assertThat(outputAdapter.summe)
                 .isEqualByComparingTo(geldProGeschaeft.multiply(new BigDecimal(geschaeftAnzahl)));
-        assertTrue(geschaefte.stream()
-                .allMatch(geschaeft -> geschaeft.istBerechnetFuerKonfiguration(konfiguration)));
+        assertTrue(geschaefte_.stream()
+                .allMatch(geschaeft -> geschaeft.istBerechnetFuerProvision(provision)));
     }
 
     @Test
-    public void vermittlerSpezifisch_konfigurationMitAnderemProdukt_nichtBerechnet() {
+    public void vermittlerSpezifisch_provisionMitAnderemProdukt_nichtBerechnet() {
         // given
         var anderesProdukt = defaultProdukt()
                 .mitProduktName("ein anderes Produkt");
-        produkte.add(anderesProdukt);
-        konfiguration.mitVermittler(vermittler);
-        konfiguration.mitProdukt(anderesProdukt);
-        geschaefte.addAll(erstelleGeschaefte(produkt, vermittler, 1));
+        produkte_.add(anderesProdukt);
+        provision.mitVermittler(vermittler)
+                .mitProdukt(anderesProdukt);
+        geschaefte_.addAll(erstelleGeschaefte(produkt, vermittler, 1));
 
         // when
-        berechnung.berechneVermittlerSpezifischeKonfigs();
+        berechnung.berechneVermittlerSpezifischeProvisionen();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
-        assertTrue(geschaefte.stream()
-                .noneMatch(geschaeft -> geschaeft.istBerechnetFuerKonfiguration(konfiguration)));
+        assertTrue(geschaefte_.stream()
+                .noneMatch(geschaeft -> geschaeft.istBerechnetFuerProvision(provision)));
     }
 
     @Test
@@ -179,35 +181,35 @@ public class StandardKonfigurationTest {
         // given
         var anderesProdukt = defaultProdukt()
                 .mitProduktName("ein anderes Produkt");
-        produkte.add(anderesProdukt);
-        konfiguration.mitVermittler(vermittler);
-        geschaefte.addAll(erstelleGeschaefte(anderesProdukt, vermittler, 1));
+        produkte_.add(anderesProdukt);
+        provision.mitVermittler(vermittler);
+        geschaefte_.addAll(erstelleGeschaefte(anderesProdukt, vermittler, 1));
 
         // when
-        berechnung.berechneVermittlerSpezifischeKonfigs();
+        berechnung.berechneVermittlerSpezifischeProvisionen();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
-        assertTrue(geschaefte.stream()
-                .noneMatch(geschaeft -> geschaeft.istBerechnetFuerKonfiguration(konfiguration)));
+        assertTrue(geschaefte_.stream()
+                .noneMatch(geschaeft -> geschaeft.istBerechnetFuerProvision(provision)));
     }
 
     @Test
-    public void vermittlerSpezifisch_konfigurationMitAnderemVermittler_nichtBerechnet() {
+    public void vermittlerSpezifisch_provisionMitAnderemVermittler_nichtBerechnet() {
         // given
         var andererVermittler = defaultVermittler()
                 .mitVermittlerNummer("eine andere Vermittlernummer");
-        konfiguration.mitVermittler(andererVermittler);
+        provision.mitVermittler(andererVermittler);
         vermittler_.add(andererVermittler);
-        geschaefte.addAll(erstelleGeschaefte(produkt, vermittler, 1));
+        geschaefte_.addAll(erstelleGeschaefte(produkt, vermittler, 1));
 
         // when
-        berechnung.berechneVermittlerSpezifischeKonfigs();
+        berechnung.berechneVermittlerSpezifischeProvisionen();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
-        assertTrue(geschaefte.stream()
-                .noneMatch(geschaeft -> geschaeft.istBerechnetFuerKonfiguration(konfiguration)));
+        assertTrue(geschaefte_.stream()
+                .noneMatch(geschaeft -> geschaeft.istBerechnetFuerProvision(provision)));
     }
 
     @Test
@@ -216,31 +218,31 @@ public class StandardKonfigurationTest {
         var andererVermittler = defaultVermittler()
                 .mitVermittlerNummer("eine andere Vermittlernummer");
         vermittler_.add(andererVermittler);
-        konfiguration.mitVermittler(vermittler);
-        geschaefte.addAll(erstelleGeschaefte(produkt, andererVermittler, 1));
+        provision.mitVermittler(vermittler);
+        geschaefte_.addAll(erstelleGeschaefte(produkt, andererVermittler, 1));
 
         // when
-        berechnung.berechneVermittlerSpezifischeKonfigs();
+        berechnung.berechneVermittlerSpezifischeProvisionen();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
-        assertTrue(geschaefte.stream()
-                .noneMatch(geschaeft -> geschaeft.istBerechnetFuerKonfiguration(konfiguration)));
+        assertTrue(geschaefte_.stream()
+                .noneMatch(geschaeft -> geschaeft.istBerechnetFuerProvision(provision)));
     }
 
     @Test
     public void vermittlerSpezifisch_geschaeftKeinSale_nichtBerechnet() {
         // given
-        konfiguration.mitVermittler(vermittler);
-        geschaefte.addAll(erstelleGeschaefte(produkt, vermittler, 1, Geschaeft.Status.LEAD));
+        provision.mitVermittler(vermittler);
+        geschaefte_.addAll(erstelleGeschaefte(produkt, vermittler, 1, Geschaeft.Status.LEAD));
 
         // when
-        berechnung.berechneProduktSpezifischeKonfigs();
+        berechnung.berechneProduktSpezifischeProvisioenn();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
-        assertTrue(geschaefte.stream()
-                .noneMatch(g -> g.istBerechnetFuerKonfiguration(konfiguration)));
+        assertTrue(geschaefte_.stream()
+                .noneMatch(g -> g.istBerechnetFuerProvision(provision)));
     }
 
     private List<Geschaeft> erstelleGeschaefte(Produkt produkt, Vermittler vermittler, int count) {

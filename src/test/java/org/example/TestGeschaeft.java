@@ -1,20 +1,24 @@
 package org.example;
 
 import org.example.provisionsberechnung.Geschaeft;
-import org.example.provisionsberechnung.Konfiguration;
+import org.example.provisionsberechnung.Provision;
 import org.example.provisionsberechnung.Produkt;
 import org.example.provisionsberechnung.Vermittler;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TestGeschaeft implements Geschaeft {
     private LocalDateTime anlieferDatum;
     private Produkt produkt;
-    public List<Konfiguration> fuerKonfigsBerechnet = new ArrayList<>();
+    public List<Provision> fuerKonfigsBerechnet = new ArrayList<>();
     private Vermittler vermittler;
     private Status status;
+    private final Map<String, BigDecimal> volumenBetraege = new HashMap<>();
 
     public static TestGeschaeft defaultGeschaeft() {
         return new TestGeschaeft()
@@ -43,9 +47,14 @@ public class TestGeschaeft implements Geschaeft {
     }
 
     @Override
-    public boolean istBerechnetFuerKonfiguration(Konfiguration konfiguration) {
+    public Map<String, BigDecimal> volumenBetraege() {
+        return volumenBetraege;
+    }
+
+    @Override
+    public boolean istBerechnetFuerProvision(Provision provision) {
         return fuerKonfigsBerechnet.stream()
-                .anyMatch(k -> k.equals(konfiguration));
+                .anyMatch(k -> k.equals(provision));
     }
 
     public TestGeschaeft mitAnlieferDatum(LocalDateTime anlieferDatum) {
@@ -68,12 +77,18 @@ public class TestGeschaeft implements Geschaeft {
         return this;
     }
 
-    public TestGeschaeft mitBerechnetFuer(TestKonfiguration konfiguration) {
+    public TestGeschaeft mitVolumenBetrag(String feld, BigDecimal betrag) {
+        volumenBetraege.put(feld, betrag);
+        return this;
+    }
+
+    public TestGeschaeft mitBerechnetFuer(TestProvision konfiguration) {
         fuerKonfigsBerechnet.add(konfiguration);
         return this;
     }
 
-    public void makiereBerechnet(Konfiguration konfiguration) {
-        fuerKonfigsBerechnet.add(konfiguration);
+    public void makiereBerechnet(Provision provision) {
+        fuerKonfigsBerechnet.add(provision);
     }
+
 }

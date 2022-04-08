@@ -1,36 +1,46 @@
 package org.example.provisionsarten;
 
 import org.example.provisionsberechnung.Geschaeft;
-import org.example.provisionsberechnung.Provision;
 import org.example.provisionsberechnung.Produkt;
+import org.example.provisionsberechnung.Provision;
 import org.example.provisionsberechnung.Vermittler;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 
-public class StandardProvision implements Provision {
+public class StandardVolumenProvision implements Provision {
 
-    private BigDecimal geldProGeschaeft;
+    private BigDecimal prozentProGeschaeft;
     private Produkt produkt;
     private Vermittler vermittler;
+    private String volumenFeld;
 
-    public StandardProvision mitVermittler(Vermittler vermittler) {
+    public StandardVolumenProvision mitVermittler(Vermittler vermittler) {
         this.vermittler = vermittler;
         return this;
     }
 
-    public StandardProvision mitProdukt(Produkt produkt) {
+    public StandardVolumenProvision mitProdukt(Produkt produkt) {
         this.produkt = produkt;
         return this;
     }
 
-    public StandardProvision mitGeldProGeschaeft(BigDecimal geldProGeschaeft) {
-        this.geldProGeschaeft = geldProGeschaeft;
+    public StandardVolumenProvision mitProzentProGeschaeft(BigDecimal prozentProGeschaeft) {
+        this.prozentProGeschaeft = prozentProGeschaeft;
+        return this;
+    }
+
+    public StandardVolumenProvision mitVolumenFeld(String volumenFeld) {
+        this.volumenFeld = volumenFeld;
         return this;
     }
 
     @Override
     public BigDecimal berechneGeld(Geschaeft geschaeft) {
-        return geldProGeschaeft;
+        return geschaeft.volumenBetraege().get(volumenFeld)
+                .multiply(prozentProGeschaeft)
+                .divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
     }
 
     @Override

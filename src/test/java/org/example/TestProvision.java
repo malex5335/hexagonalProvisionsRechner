@@ -1,33 +1,33 @@
 package org.example;
 
 import org.example.provisionsberechnung.Geschaeft;
-import org.example.provisionsberechnung.Konfiguration;
+import org.example.provisionsberechnung.Provision;
 import org.example.provisionsberechnung.Produkt;
 import org.example.provisionsberechnung.Vermittler;
 
 import java.math.BigDecimal;
 
-public class TestKonfiguration implements Konfiguration {
+public class TestProvision implements Provision {
 
     private BigDecimal geldProGeschaeft;
     private Produkt produkt;
     private Vermittler vermittler;
 
-    public static TestKonfiguration defaultKonfiguration() {
-        return new TestKonfiguration();
+    public static TestProvision defaultProvision() {
+        return new TestProvision();
     }
 
-    public TestKonfiguration mitProdukt(Produkt produkt){
+    public TestProvision mitProdukt(Produkt produkt){
         this.produkt = produkt;
         return this;
     }
 
-    public TestKonfiguration mitVermittler(Vermittler vermittler){
+    public TestProvision mitVermittler(Vermittler vermittler){
         this.vermittler = vermittler;
         return this;
     }
 
-    public TestKonfiguration mitGeldProGeschaeft(BigDecimal geldProGeschaeft){
+    public TestProvision mitGeldProGeschaeft(BigDecimal geldProGeschaeft){
         this.geldProGeschaeft = geldProGeschaeft;
         return this;
     }

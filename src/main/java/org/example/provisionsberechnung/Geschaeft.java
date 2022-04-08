@@ -1,6 +1,8 @@
 package org.example.provisionsberechnung;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 public interface Geschaeft {
     LocalDateTime anlieferDatum();
@@ -15,5 +17,7 @@ public interface Geschaeft {
 
     Status status();
 
-    boolean istBerechnetFuerKonfiguration(Konfiguration konfiguration);
+    Map<String, BigDecimal> volumenBetraege();
+
+    boolean istBerechnetFuerProvision(Provision provision);
 }

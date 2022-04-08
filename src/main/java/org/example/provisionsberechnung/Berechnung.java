@@ -16,17 +16,17 @@ public class Berechnung {
     }
 
     /**
-     * berechnet produktspezifische Konfigurationen
+     * berechnet produktspezifische Provisionen
      * ausgezahltes Geld wird addiert und mittels
      * {@link BerechnungOutputPort#infoAnFreigebende(BigDecimal)} weiterverarbeitet
      */
-    public void berechneProduktSpezifischeKonfigs() {
+    public void berechneProduktSpezifischeProvisioenn() {
         var summe = BigDecimal.ZERO;
         for(var produkt : berechnungInputPort.alleProdukte()) {
             if(produkt.istAktiv()) {
-                for (var konfiguration : berechnungInputPort.alleKonfigurationen(produkt)) {
+                for (var provision : berechnungInputPort.alleProvisionen(produkt)) {
                     var geschaefte = berechnungInputPort.unberechneteGeschaefte(produkt);
-                    summe = summe.add(berechneGeschaefte(geschaefte, konfiguration));
+                    summe = summe.add(berechneGeschaefte(geschaefte, provision));
                 }
             }
         }
@@ -34,11 +34,11 @@ public class Berechnung {
     }
 
     /**
-     * berechnet vermittlerspezifische Konfigurationen für Haupt- und Untervermittler
+     * berechnet vermittlerspezifische Provisionen für Haupt- und Untervermittler
      * ausgezahltes Geld wird addiert und mittels
      * {@link BerechnungOutputPort#infoAnFreigebende(BigDecimal)} weiterverarbeitet
      */
-    public void berechneVermittlerSpezifischeKonfigs() {
+    public void berechneVermittlerSpezifischeProvisionen() {
         var summe = BigDecimal.ZERO;
         for(var vermittler : berechnungInputPort.alleVermittler()) {
             var hauptVermittler = vermittler.hauptVermittler();
@@ -48,21 +48,21 @@ public class Berechnung {
     }
 
     /**
-     * berechnet vermittlerspezifische Konfigurationen
+     * berechnet vermittlerspezifische Provisionen
      * ausgezahltes Geld wird addiert
      *
-     * @param ausKonfiguration  der Vermittler dessen Konfiguration berechnet werden
+     * @param ausProvision  der Vermittler dessen Provision berechnet werden
      * @param ausGeschaeften    der Vermittler dessen Geschaefte berechnet werden
      * @return  eine Summe an Geld, welche berechnet werde<br>
      *          als Standard wird {@link BigDecimal.ZERO} zurückgegeben
      */
-    private BigDecimal berechneFuerVermittler(Vermittler ausKonfiguration, Vermittler ausGeschaeften) {
+    private BigDecimal berechneFuerVermittler(Vermittler ausProvision, Vermittler ausGeschaeften) {
         var summe = BigDecimal.ZERO;
         for(var produkt : berechnungInputPort.alleProdukte()) {
             if(produkt.istAktiv()) {
-                for (var konfiguration : berechnungInputPort.alleKonfigurationen(produkt, ausKonfiguration)) {
+                for (var provision : berechnungInputPort.alleProvisionen(produkt, ausProvision)) {
                     var geschaefte = berechnungInputPort.unberechneteGeschaefte(ausGeschaeften, produkt);
-                    summe = summe.add(berechneGeschaefte(geschaefte, konfiguration));
+                    summe = summe.add(berechneGeschaefte(geschaefte, provision));
                 }
             }
         }
@@ -80,12 +80,12 @@ public class Berechnung {
         return zeitpunkt.isBefore(verganenheit);
     }
 
-    private BigDecimal berechneGeschaefte(List<Geschaeft> geschaefte, Konfiguration konfiguration) {
+    private BigDecimal berechneGeschaefte(List<Geschaeft> geschaefte, Provision provision) {
         var summe = BigDecimal.ZERO;
         for(var geschaeft : geschaefte) {
             if(sollBerechnetWerden(geschaeft)) {
-                var geld = konfiguration.berechneGeld(geschaeft);
-                berechnungOutputPort.markiereBerechnet(geschaefte, konfiguration);
+                var geld = provision.berechneGeld(geschaeft);
+                berechnungOutputPort.markiereBerechnet(geschaefte, provision);
                 summe = summe.add(geld);
             }
         }

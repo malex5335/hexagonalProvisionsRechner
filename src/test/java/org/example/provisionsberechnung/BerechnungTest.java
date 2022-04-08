@@ -15,57 +15,57 @@ import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.example.TestGeschaeft.defaultGeschaeft;
-import static org.example.TestKonfiguration.defaultKonfiguration;
+import static org.example.TestProvision.defaultProvision;
 import static org.example.TestProdukt.defaultProdukt;
 import static org.example.TestVermittler.defaultVermittler;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BerechnungTest {
 
-    public final List<Produkt> produkte = new ArrayList<>();
+    public final List<Produkt> produkte_ = new ArrayList<>();
     public final List<Vermittler> vermittler_ = new ArrayList<>();
-    public final List<Geschaeft> geschaefte = new ArrayList<>();
-    public final List<Konfiguration> konfigurationen = new ArrayList<>();
+    public final List<Geschaeft> geschaefte_ = new ArrayList<>();
+    public final List<Provision> provisionen_ = new ArrayList<>();
     public BerechnungOutputTestAdapter outputAdapter;
     public BerechnungInputTestAdapter inputAdapter;
     public Berechnung berechnung;
     public TestVermittler vermittler;
     public TestProdukt produkt;
     public BigDecimal geldProGeschaeft;
-    public TestKonfiguration konfiguration;
+    public TestProvision provision;
 
     @BeforeEach
     void setUp() {
         outputAdapter = new BerechnungOutputTestAdapter();
         inputAdapter = new BerechnungInputTestAdapter()
                 .mitVermittler(vermittler_)
-                .mitProukten(produkte)
-                .mitKonfigurationen(konfigurationen)
-                .mitGeschaeften(geschaefte);
+                .mitProukten(produkte_)
+                .mitProvisionen(provisionen_)
+                .mitGeschaeften(geschaefte_);
         berechnung = new Berechnung(inputAdapter, outputAdapter);
         vermittler = defaultVermittler();
         vermittler_.add(vermittler);
         produkt = defaultProdukt();
-        produkte.add(produkt);
+        produkte_.add(produkt);
         geldProGeschaeft = new BigDecimal(10);
-        konfiguration = defaultKonfiguration()
+        provision = defaultProvision()
                 .mitProdukt(produkt)
                 .mitGeldProGeschaeft(geldProGeschaeft);
-        konfigurationen.add(konfiguration);
+        provisionen_.add(provision);
     }
 
     @AfterEach
     void tearDown() {
-        produkte.clear();
+        produkte_.clear();
         vermittler_.clear();
-        geschaefte.clear();
-        konfigurationen.clear();
+        geschaefte_.clear();
+        provisionen_.clear();
         outputAdapter = null;
         inputAdapter = null;
         berechnung = null;
         produkt = null;
         vermittler = null;
-        konfiguration = null;
+        provision = null;
     }
 
     @Test
@@ -77,22 +77,22 @@ public class BerechnungTest {
                 .mitProdukt(produkt)
                 .mitVermittler(unterVermittler);
         vermittler_.add(unterVermittler);
-        geschaefte.add(geschaeft);
-        konfiguration.mitVermittler(vermittler);
+        geschaefte_.add(geschaeft);
+        provision.mitVermittler(vermittler);
 
         // when
         // TODO: why do I need to wait 1ms so that java can update all references?
         TimeUnit.MILLISECONDS.sleep(1);
-        berechnung.berechneVermittlerSpezifischeKonfigs();
+        berechnung.berechneVermittlerSpezifischeProvisionen();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(geldProGeschaeft);
-        assertTrue(geschaefte.stream()
-                .allMatch(g -> g.istBerechnetFuerKonfiguration(konfiguration)));
+        assertTrue(geschaefte_.stream()
+                .allMatch(g -> g.istBerechnetFuerProvision(provision)));
     }
 
     @Test
-    public void konfigurationMitAnderemVermittler_nichtBerechnet() {
+    public void provisionMitAnderemVermittler_nichtBerechnet() {
         // given
         var andererVermittler = defaultVermittler()
                 .mitVermittlerNummer("eine andere Vermittlernummer");
@@ -100,16 +100,16 @@ public class BerechnungTest {
                 .mitProdukt(produkt)
                 .mitVermittler(vermittler);
         vermittler_.add(andererVermittler);
-        geschaefte.add(geschaeft);
-        konfiguration.mitVermittler(andererVermittler);
+        geschaefte_.add(geschaeft);
+        provision.mitVermittler(andererVermittler);
 
         // when
-        berechnung.berechneVermittlerSpezifischeKonfigs();
+        berechnung.berechneVermittlerSpezifischeProvisionen();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
-        assertTrue(geschaefte.stream()
-                .noneMatch(g -> g.istBerechnetFuerKonfiguration(konfiguration)));
+        assertTrue(geschaefte_.stream()
+                .noneMatch(g -> g.istBerechnetFuerProvision(provision)));
     }
 
     @Test
@@ -121,15 +121,15 @@ public class BerechnungTest {
                 .mitProdukt(produkt)
                 .mitVermittler(andererVermittler);
         vermittler_.add(andererVermittler);
-        geschaefte.add(geschaeft);
+        geschaefte_.add(geschaeft);
 
         // when
-        berechnung.berechneVermittlerSpezifischeKonfigs();
+        berechnung.berechneVermittlerSpezifischeProvisionen();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
-        assertTrue(geschaefte.stream()
-                .noneMatch(g -> g.istBerechnetFuerKonfiguration(konfiguration)));
+        assertTrue(geschaefte_.stream()
+                .noneMatch(g -> g.istBerechnetFuerProvision(provision)));
     }
 
     @Test
@@ -138,17 +138,17 @@ public class BerechnungTest {
         var geschaeft = defaultGeschaeft()
                 .mitProdukt(produkt)
                 .mitVermittler(vermittler)
-                .mitBerechnetFuer(konfiguration);
-        geschaefte.add(geschaeft);
-        konfiguration.mitVermittler(vermittler);
+                .mitBerechnetFuer(provision);
+        geschaefte_.add(geschaeft);
+        provision.mitVermittler(vermittler);
 
         // when
-        berechnung.berechneVermittlerSpezifischeKonfigs();
+        berechnung.berechneVermittlerSpezifischeProvisionen();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
-        assertTrue(geschaefte.stream()
-                .allMatch(g -> g.istBerechnetFuerKonfiguration(konfiguration)));
+        assertTrue(geschaefte_.stream()
+                .allMatch(g -> g.istBerechnetFuerProvision(provision)));
     }
 
     @Test
@@ -156,16 +156,16 @@ public class BerechnungTest {
         // given
         var geschaeft = defaultGeschaeft()
                 .mitProdukt(produkt)
-                .mitBerechnetFuer(konfiguration);
-        geschaefte.add(geschaeft);
+                .mitBerechnetFuer(provision);
+        geschaefte_.add(geschaeft);
 
         // when
-        berechnung.berechneProduktSpezifischeKonfigs();
+        berechnung.berechneProduktSpezifischeProvisioenn();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
-        assertTrue(geschaefte.stream()
-                .allMatch(g -> g.istBerechnetFuerKonfiguration(konfiguration)));
+        assertTrue(geschaefte_.stream()
+                .allMatch(g -> g.istBerechnetFuerProvision(provision)));
     }
 
     @Test
@@ -174,18 +174,18 @@ public class BerechnungTest {
         var geschaeft = defaultGeschaeft()
                 .mitProdukt(produkt)
                 .mitVermittler(vermittler);
-        geschaefte.add(geschaeft);
-        konfiguration.mitVermittler(vermittler);
+        geschaefte_.add(geschaeft);
+        provision.mitVermittler(vermittler);
 
         // when
         // TODO: why do I need to wait 1ms so that java can update all references?
         TimeUnit.MILLISECONDS.sleep(1);
-        berechnung.berechneVermittlerSpezifischeKonfigs();
+        berechnung.berechneVermittlerSpezifischeProvisionen();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(geldProGeschaeft);
-        assertTrue(geschaefte.stream()
-                .allMatch(g -> g.istBerechnetFuerKonfiguration(konfiguration)));
+        assertTrue(geschaefte_.stream()
+                .allMatch(g -> g.istBerechnetFuerProvision(provision)));
     }
 
     @Test
@@ -193,17 +193,17 @@ public class BerechnungTest {
         // given
         var geschaeft = defaultGeschaeft()
                 .mitProdukt(produkt);
-        geschaefte.add(geschaeft);
+        geschaefte_.add(geschaeft);
 
         // when
         // TODO: why do I need to wait 1ms so that java can update all references?
         TimeUnit.MILLISECONDS.sleep(1);
-        berechnung.berechneProduktSpezifischeKonfigs();
+        berechnung.berechneProduktSpezifischeProvisioenn();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(geldProGeschaeft);
-        assertTrue(geschaefte.stream()
-                .allMatch(g -> g.istBerechnetFuerKonfiguration(konfiguration)));
+        assertTrue(geschaefte_.stream()
+                .allMatch(g -> g.istBerechnetFuerProvision(provision)));
     }
 
     @Test
@@ -212,17 +212,17 @@ public class BerechnungTest {
         var geschaeft = defaultGeschaeft()
                 .mitProdukt(produkt)
                 .mitVermittler(vermittler);
-        geschaefte.add(geschaeft);
-        konfiguration.mitVermittler(vermittler);
+        geschaefte_.add(geschaeft);
+        provision.mitVermittler(vermittler);
         produkt.mitAktiv(false);
 
         // when
-        berechnung.berechneVermittlerSpezifischeKonfigs();
+        berechnung.berechneVermittlerSpezifischeProvisionen();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
-        assertTrue(geschaefte.stream()
-                .noneMatch(g -> g.istBerechnetFuerKonfiguration(konfiguration)));
+        assertTrue(geschaefte_.stream()
+                .noneMatch(g -> g.istBerechnetFuerProvision(provision)));
     }
 
     @Test
@@ -230,16 +230,16 @@ public class BerechnungTest {
         // given
         var geschaeft = defaultGeschaeft()
                 .mitProdukt(produkt);
-        geschaefte.add(geschaeft);
+        geschaefte_.add(geschaeft);
         produkt.mitAktiv(false);
 
         // when
-        berechnung.berechneProduktSpezifischeKonfigs();
+        berechnung.berechneProduktSpezifischeProvisioenn();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
-        assertTrue(geschaefte.stream()
-                .noneMatch(g -> g.istBerechnetFuerKonfiguration(konfiguration)));
+        assertTrue(geschaefte_.stream()
+                .noneMatch(g -> g.istBerechnetFuerProvision(provision)));
     }
 
     @ParameterizedTest
@@ -250,16 +250,16 @@ public class BerechnungTest {
                 .mitProdukt(produkt)
                 .mitVermittler(vermittler)
                 .mitAnlieferDatum(LocalDate.now().atStartOfDay().minusDays(tageZurueck));
-        geschaefte.add(geschaeft);
-        konfiguration.mitVermittler(vermittler);
+        geschaefte_.add(geschaeft);
+        provision.mitVermittler(vermittler);
 
         // when
-        berechnung.berechneVermittlerSpezifischeKonfigs();
+        berechnung.berechneVermittlerSpezifischeProvisionen();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
-        assertTrue(geschaefte.stream()
-                .noneMatch(g -> g.istBerechnetFuerKonfiguration(konfiguration)));
+        assertTrue(geschaefte_.stream()
+                .noneMatch(g -> g.istBerechnetFuerProvision(provision)));
     }
 
     @ParameterizedTest
@@ -269,15 +269,15 @@ public class BerechnungTest {
         var geschaeft = defaultGeschaeft()
                 .mitProdukt(produkt)
                 .mitAnlieferDatum(LocalDate.now().atStartOfDay().minusDays(tageZurueck));
-        geschaefte.add(geschaeft);
+        geschaefte_.add(geschaeft);
 
         // when
-        berechnung.berechneProduktSpezifischeKonfigs();
+        berechnung.berechneProduktSpezifischeProvisioenn();
 
         // then
         assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
-        assertTrue(geschaefte.stream()
-                .noneMatch(g -> g.istBerechnetFuerKonfiguration(konfiguration)));
+        assertTrue(geschaefte_.stream()
+                .noneMatch(g -> g.istBerechnetFuerProvision(provision)));
 
     }
 }

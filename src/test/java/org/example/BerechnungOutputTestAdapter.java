@@ -2,7 +2,7 @@ package org.example;
 
 import org.example.provisionsberechnung.BerechnungOutputPort;
 import org.example.provisionsberechnung.Geschaeft;
-import org.example.provisionsberechnung.Konfiguration;
+import org.example.provisionsberechnung.Provision;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -17,7 +17,7 @@ public class BerechnungOutputTestAdapter implements BerechnungOutputPort {
     }
 
     @Override
-    public void markiereBerechnet(List<Geschaeft> geschaefte, Konfiguration konfiguration) {
-        geschaefte.forEach(g -> ((TestGeschaeft) g).makiereBerechnet(konfiguration));
+    public void markiereBerechnet(List<Geschaeft> geschaefte, Provision provision) {
+        geschaefte.forEach(g -> ((TestGeschaeft) g).makiereBerechnet(provision));
     }
 }

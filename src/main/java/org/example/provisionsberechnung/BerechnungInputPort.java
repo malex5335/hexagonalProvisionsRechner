@@ -3,9 +3,9 @@ package org.example.provisionsberechnung;
 import java.util.List;
 
 public interface BerechnungInputPort {
-    List<Konfiguration> alleKonfigurationen(final Produkt produkt);
+    List<Provision> alleProvisionen(final Produkt produkt);
 
-    List<Konfiguration> alleKonfigurationen(final Produkt produkt, final Vermittler vermittler);
+    List<Provision> alleProvisionen(final Produkt produkt, final Vermittler vermittler);
 
     List<Produkt> alleProdukte();
 

@@ -6,5 +6,5 @@ import java.util.List;
 public interface BerechnungOutputPort {
     void infoAnFreigebende(final BigDecimal summe);
 
-    void markiereBerechnet(List<Geschaeft> geschaefte, Konfiguration konfiguration);
+    void markiereBerechnet(List<Geschaeft> geschaefte, Provision provision);
 }

@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 public class BerechnungInputTestAdapter implements BerechnungInputPort {
     public List<Geschaeft> geschaefte = new ArrayList<>();
-    public List<Konfiguration> konfigurationen = new ArrayList<>();
+    public List<Provision> konfigurationen = new ArrayList<>();
     public List<Produkt> produkte = new ArrayList<>();
     public List<Vermittler> vermittler_ = new ArrayList<>();
 
@@ -17,8 +17,8 @@ public class BerechnungInputTestAdapter implements BerechnungInputPort {
         return this;
     }
 
-    public BerechnungInputTestAdapter mitKonfigurationen(List<Konfiguration> konfiguration) {
-        konfigurationen = konfiguration;
+    public BerechnungInputTestAdapter mitProvisionen(List<Provision> provision) {
+        konfigurationen = provision;
         return this;
     }
 
@@ -33,14 +33,14 @@ public class BerechnungInputTestAdapter implements BerechnungInputPort {
     }
 
     @Override
-    public List<Konfiguration> alleKonfigurationen(Produkt produkt) {
+    public List<Provision> alleProvisionen(Produkt produkt) {
         return konfigurationen.stream()
                 .filter(k -> k.fuerProdukt(produkt))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<Konfiguration> alleKonfigurationen(Produkt produkt, Vermittler vermittler) {
+    public List<Provision> alleProvisionen(Produkt produkt, Vermittler vermittler) {
         return konfigurationen.stream()
                 .filter(k -> k.fuerVermittler(vermittler))
                 .filter(k -> k.fuerProdukt(produkt))
@@ -57,7 +57,7 @@ public class BerechnungInputTestAdapter implements BerechnungInputPort {
         return geschaefte.stream()
                 .filter(g -> g.fuerProdukt(produkt))
                 .filter(g -> konfigurationen.stream()
-                        .noneMatch(g::istBerechnetFuerKonfiguration))
+                        .noneMatch(g::istBerechnetFuerProvision))
                 .collect(Collectors.toList());
     }
 
@@ -72,7 +72,7 @@ public class BerechnungInputTestAdapter implements BerechnungInputPort {
                 .filter(g -> g.fuerVermittler(vermittler))
                 .filter(g -> g.fuerProdukt(produkt))
                 .filter(g -> konfigurationen.stream()
-                        .noneMatch(g::istBerechnetFuerKonfiguration))
+                        .noneMatch(g::istBerechnetFuerProvision))
                 .collect(Collectors.toList());
     }
 }
