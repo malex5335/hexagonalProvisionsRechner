@@ -15,11 +15,11 @@ public class StandardProvision implements Konfiguration {
 
     public StandardProvision(Produkt produkt, Vermittler vermittler, BigDecimal geldProGeschaeft) {
         mitProdukt(produkt);
-        mitVermitter(vermittler);
+        mitVermittler(vermittler);
         mitGeldProGeschaeft(geldProGeschaeft);
     }
 
-    public void mitVermitter(Vermittler vermittler) {
+    public void mitVermittler(Vermittler vermittler) {
         this.vermittler = vermittler;
     }
 

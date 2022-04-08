@@ -69,6 +69,70 @@ public class BerechnungTest {
     }
 
     @Test
+    public void vermittlerSpezifisch_geschaefteVonUntervermittler_erfolgreichBerechnet() throws InterruptedException {
+        // given
+        var unterVermittler = defaultVermittler()
+                .mitHauptVermittler(vermittler);
+        var geschaeft = defaultGeschaeft()
+                .mitProdukt(produkt)
+                .mitVermittler(unterVermittler);
+        vermittler_.add(unterVermittler);
+        geschaefte.add(geschaeft);
+        konfiguration.mitVermittler(vermittler);
+
+        // when
+        // TODO: why do I need to wait 1ms so that java can update all references?
+        TimeUnit.MILLISECONDS.sleep(1);
+        berechnung.berechneVermittlerSpezifischeKonfigs();
+
+        // then
+        assertThat(outputAdapter.summe).isEqualByComparingTo(geldProGeschaeft);
+        assertTrue(geschaefte.stream()
+                .allMatch(g -> g.istBerechnetFuerKonfiguration(konfiguration)));
+    }
+
+    @Test
+    public void konfigurationMitAnderemVermittler_nichtBerechnet() {
+        // given
+        var andererVermittler = defaultVermittler()
+                .mitVermittlerNummer("eine andere Vermittlernummer");
+        var geschaeft = defaultGeschaeft()
+                .mitProdukt(produkt)
+                .mitVermittler(vermittler);
+        vermittler_.add(andererVermittler);
+        geschaefte.add(geschaeft);
+        konfiguration.mitVermittler(andererVermittler);
+
+        // when
+        berechnung.berechneVermittlerSpezifischeKonfigs();
+
+        // then
+        assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
+        assertTrue(geschaefte.stream()
+                .noneMatch(g -> g.istBerechnetFuerKonfiguration(konfiguration)));
+    }
+
+    @Test
+    public void geschaeftMitAnderemVermittler_nichtBerechnet() {
+        // given
+        var andererVermittler = defaultVermittler()
+                .mitVermittlerNummer("eine andere Vermittlernummer");
+        var geschaeft = defaultGeschaeft()
+                .mitProdukt(produkt)
+                .mitVermittler(andererVermittler);
+        vermittler_.add(andererVermittler);
+        geschaefte.add(geschaeft);
+
+        // when
+        berechnung.berechneVermittlerSpezifischeKonfigs();
+
+        // then
+        assertThat(outputAdapter.summe).isEqualByComparingTo(BigDecimal.ZERO);
+        assertTrue(geschaefte.stream()
+                .noneMatch(g -> g.istBerechnetFuerKonfiguration(konfiguration)));
+    }
+
+    @Test
     public void vermittlerSpezifisch_geschaeftBerechnet_keineWeitereBerechnung() {
         // given
         var geschaeft = defaultGeschaeft()

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 public class Berechnung {
     public BerechnungInputPort berechnungInputPort;
@@ -33,23 +34,39 @@ public class Berechnung {
     }
 
     /**
-     * berechnet vermittlerspezifische Konfigurationen
+     * berechnet vermittlerspezifische Konfigurationen für Haupt- und Untervermittler
      * ausgezahltes Geld wird addiert und mittels
      * {@link BerechnungOutputPort#infoAnFreigebende(BigDecimal)} weiterverarbeitet
      */
     public void berechneVermittlerSpezifischeKonfigs() {
         var summe = BigDecimal.ZERO;
         for(var vermittler : berechnungInputPort.alleVermittler()) {
-            for(var produkt : berechnungInputPort.alleProdukte()) {
-                if(produkt.istAktiv()) {
-                    for (var konfiguration : berechnungInputPort.alleKonfigurationen(produkt, vermittler)) {
-                        var geschaefte = berechnungInputPort.unberechneteGeschaefte(vermittler, produkt);
-                        summe = summe.add(berechneGeschaefte(geschaefte, konfiguration));
-                    }
+            var hauptVermittler = vermittler.hauptVermittler();
+            summe = summe.add(berechneFuerVermittler(Objects.requireNonNullElse(hauptVermittler, vermittler), vermittler));
+        }
+        berechnungOutputPort.infoAnFreigebende(summe);
+    }
+
+    /**
+     * berechnet vermittlerspezifische Konfigurationen
+     * ausgezahltes Geld wird addiert
+     *
+     * @param ausKonfiguration  der Vermittler dessen Konfiguration berechnet werden
+     * @param ausGeschaeften    der Vermittler dessen Geschaefte berechnet werden
+     * @return  eine Summe an Geld, welche berechnet werde<br>
+     *          als Standard wird {@link BigDecimal.ZERO} zurückgegeben
+     */
+    private BigDecimal berechneFuerVermittler(Vermittler ausKonfiguration, Vermittler ausGeschaeften) {
+        var summe = BigDecimal.ZERO;
+        for(var produkt : berechnungInputPort.alleProdukte()) {
+            if(produkt.istAktiv()) {
+                for (var konfiguration : berechnungInputPort.alleKonfigurationen(produkt, ausKonfiguration)) {
+                    var geschaefte = berechnungInputPort.unberechneteGeschaefte(ausGeschaeften, produkt);
+                    summe = summe.add(berechneGeschaefte(geschaefte, konfiguration));
                 }
             }
         }
-        berechnungOutputPort.infoAnFreigebende(summe);
+        return summe;
     }
 
     private boolean sollBerechnetWerden(Geschaeft geschaeft){

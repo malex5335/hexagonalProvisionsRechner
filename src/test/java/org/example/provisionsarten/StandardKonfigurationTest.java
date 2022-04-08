@@ -140,7 +140,7 @@ public class StandardKonfigurationTest {
     @ValueSource(ints = {0, 1, 2, 10, 100, 5000})
     public void vermittlerSpezifisch_berechnet(int geschaeftAnzahl) throws InterruptedException {
         // given
-        konfiguration.mitVermitter(vermittler);
+        konfiguration.mitVermittler(vermittler);
         geschaefte.addAll(erstelleGeschaefte(produkt, vermittler, geschaeftAnzahl));
 
         // when
@@ -161,7 +161,7 @@ public class StandardKonfigurationTest {
         var anderesProdukt = defaultProdukt()
                 .mitProduktName("ein anderes Produkt");
         produkte.add(anderesProdukt);
-        konfiguration.mitVermitter(vermittler);
+        konfiguration.mitVermittler(vermittler);
         konfiguration.mitProdukt(anderesProdukt);
         geschaefte.addAll(erstelleGeschaefte(produkt, vermittler, 1));
 
@@ -180,7 +180,7 @@ public class StandardKonfigurationTest {
         var anderesProdukt = defaultProdukt()
                 .mitProduktName("ein anderes Produkt");
         produkte.add(anderesProdukt);
-        konfiguration.mitVermitter(vermittler);
+        konfiguration.mitVermittler(vermittler);
         geschaefte.addAll(erstelleGeschaefte(anderesProdukt, vermittler, 1));
 
         // when
@@ -197,7 +197,7 @@ public class StandardKonfigurationTest {
         // given
         var andererVermittler = defaultVermittler()
                 .mitVermittlerNummer("eine andere Vermittlernummer");
-        konfiguration.mitVermitter(andererVermittler);
+        konfiguration.mitVermittler(andererVermittler);
         vermittler_.add(andererVermittler);
         geschaefte.addAll(erstelleGeschaefte(produkt, vermittler, 1));
 
@@ -216,7 +216,7 @@ public class StandardKonfigurationTest {
         var andererVermittler = defaultVermittler()
                 .mitVermittlerNummer("eine andere Vermittlernummer");
         vermittler_.add(andererVermittler);
-        konfiguration.mitVermitter(vermittler);
+        konfiguration.mitVermittler(vermittler);
         geschaefte.addAll(erstelleGeschaefte(produkt, andererVermittler, 1));
 
         // when
@@ -231,7 +231,7 @@ public class StandardKonfigurationTest {
     @Test
     public void vermittlerSpezifisch_geschaeftKeinSale_nichtBerechnet() {
         // given
-        konfiguration.mitVermitter(vermittler);
+        konfiguration.mitVermittler(vermittler);
         geschaefte.addAll(erstelleGeschaefte(produkt, vermittler, 1, Geschaeft.Status.LEAD));
 
         // when
